@@ -1,0 +1,699 @@
+{
+    "description": "The description of a capacitor",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://asgard.com/schemas/capacitor.json",
+    "title": "capacitor",
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+        "manufacturerInfo": {
+            "$ref": "#/$defs/manufacturerInfo"
+        }
+    },
+    "required": [
+        "manufacturerInfo"
+    ],
+    "$defs": {
+        "manufacturerInfo": {
+            "description": "Container for manufacturer-specific information about the capacitor",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "datasheetInfo": {
+                    "description": "Information extracted from the component datasheet and PMs Excel data",
+                    "$ref": "#/$defs/datasheetInfo"
+                }
+            },
+            "required": [
+                "datasheetInfo"
+            ]
+        },
+        "datasheetInfo": {
+            "description": "Information extracted from the component datasheet and PMs Excel data",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "part": {
+                    "description": "Basic part identification",
+                    "$ref": "#/$defs/part"
+                },
+                "electrical": {
+                    "description": "Electrical characteristics",
+                    "$ref": "#/$defs/electrical"
+                },
+                "thermal": {
+                    "description": "Thermal characteristics",
+                    "$ref": "#/$defs/thermal"
+                },
+                "mechanical": {
+                    "description": "Mechanical dimensions and shape information",
+                    "$ref": "#/$defs/mechanical"
+                },
+                "business": {
+                    "description": "Commercial and business information",
+                    "$ref": "#/$defs/business"
+                },
+                "lifetime": {
+                    "description": "Lifetime parameters",
+                    "$ref": "#/$defs/lifetime"
+                },
+                "modelParams": {
+                    "description": "Model parameters for circuit simulation",
+                    "$ref": "#/$defs/modelParams"
+                },
+                "factors": {
+                    "description": "Derating factors for frequency and temperature",
+                    "$ref": "#/$defs/factors"
+                }
+            },
+            "required": [
+                "part",
+                "electrical",
+                "thermal",
+                "mechanical",
+                "business",
+                "lifetime",
+                "modelParams",
+                "factors"
+            ]
+        },
+        "part": {
+            "description": "Basic part identification",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "partNumber": {
+                    "description": "Manufacturer part number",
+                    "type": [
+                        "string"
+                    ]
+                },
+                "series": {
+                    "description": "Product series name",
+                    "type": [
+                        "string"
+                    ]
+                },
+                "technology": {
+                    "description": "Capacitor technology type",
+                    "type": [
+                        "string"
+                    ],
+                    "enum": ["Alum. Electrolytic", "Alum. Polymer", "Hybrid Polymer", "Film Capacitor", "MLCC Class I", "MLCC Class II", "Other"]
+                },
+                "matchcodeDescription": {
+                    "description": "Human-readable description of the part",
+                    "type": [
+                        "string"
+                    ]
+                },
+                "case": {
+                    "description": "Case or package code",
+                    "type": [
+                        "string"
+                    ]
+                },
+                "useInDcTool": {
+                    "description": "DC Tool boolean",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
+                "internalViewOnly": {
+                    "description": "Internal view restriction flag",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "partNumber",
+                "series",
+                "technology",
+                "matchcodeDescription",
+                "case",
+                "useInDcTool",
+                "internalViewOnly"
+            ]
+        },
+        "electrical": {
+            "description": "Electrical characteristics",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "capacitance": {
+                    "description": "Capacitance value in Farads",
+                    "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                },
+                "capacitanceDriftLongTermPercent": {
+                    "description": "End-of-life capacitance change in percent (decrease)",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "capacitanceMinimumLongTerm": {
+                    "description": "Worst case of minimum capacitance (taking into account the tolerance) after end-of-life in Farads",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "ratedVoltage": {
+                    "description": "Rated voltage in Volts",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "dissipationFactor": {
+                    "description": "Dissipation factor (tan delta) in percent",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "dissipationFactorFrequency": {
+                    "description": "Frequency at which dissipation factor is measured in Hz",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "leakageCurrent": {
+                    "description": "Leakage current in Amperes",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "insulationResistance": {
+                    "description": "Insulation resistance in Ohms",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "esr": {
+                    "description": "Equivalent series resistance (ESR) in Ohms",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "esrFrequency": {
+                    "description": "Frequency at which ESR is measured in Hz",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "esrForLosses": {
+                    "description": "ESR for losses calculation in Ohms",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "rippleCurrent": {
+                    "description": "Ripple current in Amperes",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "rippleCurrentFrequency": {
+                    "description": "Frequency at which ripple current is specified in Hz",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "rippleCurrentTemperature": {
+                    "description": "Temperature at which ripple current is specified in °C",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "rippleCurrentFrequencyPoints": {
+                    "description": "Ripple current derating curve as a function of frequency",
+                    "$ref": "./utils.json#/$defs/curve"
+                },
+                "rippleCurrentTemperaturePoints": {
+                    "description": "Ripple current derating curve as a function of temperature",
+                    "$ref": "./utils.json#/$defs/curve"
+                },
+                "thermalResistance": {
+                    "description": "Thermal resistance in °C/W",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "capacitanceSaturationMLCC": {
+                    "description": "Capacitance saturation point for MLCC",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "vthMLCC": {
+                    "description": "Threshold voltage for MLCC saturation in Volts",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "capacitance",
+                "capacitanceDriftLongTermPercent",
+                "capacitanceMinimumLongTerm",
+                "ratedVoltage",
+                "dissipationFactor",
+                "dissipationFactorFrequency",
+                "leakageCurrent",
+                "insulationResistance",
+                "esr",
+                "esrFrequency",
+                "esrForLosses",
+                "rippleCurrent",
+                "rippleCurrentFrequency",
+                "rippleCurrentTemperature",
+                "rippleCurrentFrequencyPoints",
+                "rippleCurrentTemperaturePoints",
+                "thermalResistance",
+                "capacitanceSaturationMLCC",
+                "vthMLCC"
+            ]
+        },
+        "thermal": {
+            "description": "Thermal characteristics",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "temperature": {
+                    "description": "Operating temperature in °C",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "tcc": {
+                    "description": "Capacitance change in temperature range",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                }
+            },
+            "required": [
+                "temperature",
+                "tcc"
+            ]
+        },
+        "mechanical": {
+            "description": "Mechanical dimensions and shape information",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "dimensions": {
+                    "description": "Physical dimensions of the component",
+                    "$ref": "#/$defs/dimensions"
+                },
+                "shape": {
+                    "description": "Component shape and assembly information",
+                    "$ref": "#/$defs/shape"
+                }
+            },
+            "required": [
+                "dimensions",
+                "shape"
+            ]
+        },
+        "dimensions": {
+            "description": "Physical dimensions of the component",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "diameter": {
+                    "description": "Diameter in meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "width": {
+                    "description": "Width / A dimension in meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "length": {
+                    "description": "Length / B dimension in meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "height": {
+                    "description": "Height dimension in meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "pitch": {
+                    "description": "Pin pitch spacing in meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "pinDiameter": {
+                    "description": "Pin diameter in meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "pinLength": {
+                    "description": "Pin length in meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                }
+            },
+            "required": [
+                "diameter",
+                "width",
+                "length",
+                "height",
+                "pitch",
+                "pinDiameter",
+                "pinLength"
+            ]
+        },
+        "shape": {
+            "description": "Component shape and assembly information",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "assembly": {
+                    "description": "Assembly type",
+                    "type": [
+                        "string"
+                    ],
+                    "enum": ["THT", "Screw Type", "SMT", "Snap-In"]
+                },
+                "shapeType": {
+                    "description": "Shape type",
+                    "type": [
+                        "string"
+                    ],
+                    "enum": ["Box type", "Box Type 4-pin", "Cylindrical", "Radial Cylindrical", "H-Chip", "SMD Chip", "V-Chip"]
+                },
+                "volume": {
+                    "description": "Component volume in cubic meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                },
+                "footprint": {
+                    "description": "PCB footprint area in square meters",
+                    "anyOf": [
+                        {"$ref": "./utils.json#/$defs/dimensionWithTolerance"},
+                        {"type": "null"}
+                    ]
+                }
+            },
+            "required": [
+                "assembly",
+                "shapeType",
+                "volume",
+                "footprint"
+            ]
+        },
+        "business": {
+            "description": "Commercial and supply chain information",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "packaging": {
+                    "description": "Packaging format",
+                    "type": [
+                        "string"
+                    ]
+                },
+                "vpe": {
+                    "description": "Units per package/reel",
+                    "type": [
+                        "integer"
+                    ]
+                },
+                "moq": {
+                    "description": "Minimum order quantity",
+                    "type": [
+                        "integer"
+                    ]
+                },
+                "leadTime": {
+                    "description": "Lead time in weeks",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "stock": {
+                    "description": "Available stock quantity",
+                    "type": [
+                        "integer",
+                        "null"
+                    ]
+                },
+                "distribution": {
+                    "description": "Distribution channel",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                },
+                "wgu": {
+                    "description": "AlphaPlan category group (0090 - standard, 1090 - project, 2090 - special or customized)",
+                    "type": [
+                        "string"
+                    ]
+                },
+                "alphaPlanDescription": {
+                    "description": "Product description in AlphaPlan",
+                    "type": [
+                        "string"
+                    ]
+                },
+                "priceCost": {
+                    "description": "Cost price",
+                    "type": [
+                        "number"
+                    ]
+                },
+                "weCustomWeight": {
+                    "description": "WE Custom Weight",
+                    "type": [
+                        "number"
+                    ]
+                }
+            },
+            "required": [
+                "packaging",
+                "vpe",
+                "moq",
+                "leadTime",
+                "stock",
+                "distribution",
+                "wgu",
+                "alphaPlanDescription",
+                "priceCost",
+                "weCustomWeight"
+            ]
+        },
+        "lifetime": {
+            "description": "Reliability and lifetime parameters",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "lifetimeEndurance": {
+                    "description": "Lifetime endurance in hours",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "maxLifetime": {
+                    "description": "Maximum lifetime in years",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "aexp": {
+                    "description": "A parameter for lifetime calculations",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "bexp": {
+                    "description": "B parameter for lifetime calculations",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "deltaT0": {
+                    "description": "Temperature reference delta in °C for lifetime calculations",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "kfactor": {
+                    "description": "K factor for lifetime calculations",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "vxfactor": {
+                    "description": "Vx factor for lifetime calculations",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "endDefinitionC": {
+                    "description": "End-of-life capacitance change in percent (decrease)",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "endDefinitionEsr": {
+                    "description": "End-of-life ESR change in percent (increase)",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "usefulLife": {
+                    "description": "Useful life in hours",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "eoUsefulLifeC": {
+                    "description": "End-of-useful-life capacitance change in percent (decrease)",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "eoUsefulLifeR": {
+                    "description": "End-of-useful-life resistance change in percent (increase)",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "usefulLifeComment": {
+                    "description": "Additional comments about useful life",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "lifetimeEndurance",
+                "maxLifetime",
+                "aexp",
+                "bexp",
+                "deltaT0",
+                "kfactor",
+                "vxfactor",
+                "endDefinitionC",
+                "endDefinitionEsr",
+                "usefulLife",
+                "eoUsefulLifeC",
+                "eoUsefulLifeR",
+                "usefulLifeComment"
+            ]
+        },
+        "modelParams": {
+            "description": "Circuit model parameters for SPICE simulation",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "rs": {
+                    "description": "Series resistance in Ohms",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "cs": {
+                    "description": "Series capacitance in Farads",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "ls": {
+                    "description": "Series inductance in Henries",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "riso": {
+                    "description": "Isolation resistance in Ohms",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                }
+            },
+            "required": [
+                "rs",
+                "cs",
+                "ls",
+                "riso"
+            ]
+        },
+        "factors": {
+            "description": "Derating factors as functions of frequency and temperature",
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "rippleCurrentFrequencyFactorFrequency": {
+                    "description": "Frequency values for ripple current derating curve",
+                    "$ref": "./utils.json#/$defs/numberArray"
+                },
+                "rippleCurrentFrequencyFactorAmplitude": {
+                    "description": "Derating factors at specified frequencies",
+                    "$ref": "./utils.json#/$defs/numberArray"
+                },
+                "rippleCurrentTemperatureFactorTemperature": {
+                    "description": "Temperature values for ripple current derating curve",
+                    "$ref": "./utils.json#/$defs/numberArray"
+                },
+                "rippleCurrentTemperatureFactorAmplitude": {
+                    "description": "Derating factors at specified temperatures",
+                    "$ref": "./utils.json#/$defs/numberArray"
+                }
+            },
+            "required": [
+                "rippleCurrentFrequencyFactorFrequency",
+                "rippleCurrentFrequencyFactorAmplitude",
+                "rippleCurrentTemperatureFactorTemperature",
+                "rippleCurrentTemperatureFactorAmplitude"
+            ]
+        }
+    }
+}
