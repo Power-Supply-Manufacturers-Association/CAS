@@ -8,10 +8,20 @@
     "properties": {
         "manufacturerInfo": {
             "$ref": "#/$defs/manufacturerInfo"
+        },
+        "distributorsInfo": {
+            "description": "Where to buy this component",
+            "type": "array",
+            "items": { "$ref": "./utils.json#/$defs/distributorInfo" }
+        },
+        "capacitor": {
+            "description": "Capacitor data wrapper (used by some DB entries)",
+            "type": "object"
         }
     },
-    "required": [
-        "manufacturerInfo"
+    "anyOf": [
+        { "required": ["manufacturerInfo"] },
+        { "required": ["capacitor"] }
     ],
     "$defs": {
         "manufacturerInfo": {
@@ -86,12 +96,7 @@
             "required": [
                 "part",
                 "electrical",
-                "thermal",
-                "mechanical",
-                "business",
-                "lifetime",
-                "modelParams",
-                "factors"
+                "mechanical"
             ]
         },
         "part": {
@@ -150,27 +155,31 @@
                 },
                 "capacitanceDriftLongTermPercent": {
                     "description": "End-of-life capacitance change in percent (decrease)",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "capacitanceMinimumLongTerm": {
                     "description": "Worst case of minimum capacitance (taking into account the tolerance) after end-of-life in Farads",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "ratedVoltage": {
                     "description": "Rated voltage in Volts",
                     "type": "number"
                 },
+                "voltageRatedDcMax": {
+                    "description": "Maximum DC rated voltage in Volts",
+                    "type": ["number", "null"]
+                },
                 "dissipationFactor": {
                     "description": "Dissipation factor (tan delta) as fraction (e.g. 0.025 = 2.5%)",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "dissipationFactorFrequency": {
                     "description": "Frequency at which dissipation factor is measured in Hz",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "leakageCurrent": {
                     "description": "Leakage current in Amperes",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "insulationResistance": {
                     "description": "Insulation resistance in Ohms",
@@ -186,15 +195,15 @@
                 },
                 "esrForLosses": {
                     "description": "ESR for losses calculation in Ohms",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "rippleCurrent": {
                     "description": "Ripple current in Amperes",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "rippleCurrentFrequency": {
                     "description": "Frequency at which ripple current is specified in Hz",
-                    "type": "number"
+                    "type": ["number", "null"]
                 },
                 "rippleCurrentTemperature": {
                     "description": "Temperature at which ripple current is specified in °C",
@@ -227,24 +236,7 @@
             },
             "required": [
                 "capacitance",
-                "capacitanceDriftLongTermPercent",
-                "capacitanceMinimumLongTerm",
-                "ratedVoltage",
-                "dissipationFactor",
-                "dissipationFactorFrequency",
-                "leakageCurrent",
-                "insulationResistance",
-                "esr",
-                "esrFrequency",
-                "esrForLosses",
-                "rippleCurrent",
-                "rippleCurrentFrequency",
-                "rippleCurrentTemperature",
-                "rippleCurrentFrequencyPoints",
-                "rippleCurrentTemperaturePoints",
-                "thermalResistance",
-                "capacitanceSaturationMLCC",
-                "vthMLCC"
+                "ratedVoltage"
             ]
         },
         "thermal": {
@@ -357,21 +349,18 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-                "packaging": { "description": "Packaging format", "type": "string" },
-                "vpe": { "description": "Units per package/reel", "type": "integer" },
-                "moq": { "description": "Minimum order quantity", "type": "integer" },
+                "packaging": { "description": "Packaging format", "type": ["string", "null"] },
+                "vpe": { "description": "Units per package/reel", "type": ["integer", "null"] },
+                "moq": { "description": "Minimum order quantity", "type": ["integer", "null"] },
                 "leadTime": { "description": "Lead time in weeks", "type": ["number", "null"] },
                 "stock": { "description": "Available stock quantity", "type": ["integer", "null"] },
                 "distribution": { "description": "Distribution channel", "type": ["string", "null"] },
-                "wgu": { "description": "AlphaPlan category group (0090 - standard, 1090 - project, 2090 - special or customized)", "type": "string" },
-                "alphaPlanDescription": { "description": "Product description in AlphaPlan", "type": "string" },
-                "priceCost": { "description": "Cost price", "type": "number" },
-                "weCustomWeight": { "description": "WE Custom Weight", "type": "number" }
+                "wgu": { "description": "AlphaPlan category group (0090 - standard, 1090 - project, 2090 - special or customized)", "type": ["string", "null"] },
+                "alphaPlanDescription": { "description": "Product description in AlphaPlan", "type": ["string", "null"] },
+                "priceCost": { "description": "Cost price", "type": ["number", "null"] },
+                "weCustomWeight": { "description": "WE Custom Weight", "type": ["number", "null"] }
             },
-            "required": [
-                "packaging", "vpe", "moq", "leadTime", "stock", "distribution",
-                "wgu", "alphaPlanDescription", "priceCost", "weCustomWeight"
-            ]
+            "required": []
         },
         "lifetime": {
             "description": "Reliability and lifetime parameters",
@@ -392,11 +381,7 @@
                 "eoUsefulLifeR": { "description": "End-of-useful-life resistance change in percent (increase)", "type": ["number", "null"] },
                 "usefulLifeComment": { "description": "Additional comments about useful life", "type": ["string", "null"] }
             },
-            "required": [
-                "lifetimeEndurance", "maxLifetime", "aexp", "bexp", "deltaT0",
-                "kfactor", "vxfactor", "endDefinitionC", "endDefinitionEsr",
-                "usefulLife", "eoUsefulLifeC", "eoUsefulLifeR", "usefulLifeComment"
-            ]
+            "required": []
         },
         "modelParams": {
             "description": "Circuit model parameters for SPICE simulation",
@@ -408,7 +393,7 @@
                 "ls": { "description": "Series inductance in Henries", "type": ["number", "null"] },
                 "riso": { "description": "Isolation resistance in Ohms", "type": ["number", "null"] }
             },
-            "required": ["rs", "cs", "ls", "riso"]
+            "required": []
         },
         "factors": {
             "description": "Derating factors as functions of frequency and temperature",
@@ -432,12 +417,7 @@
                     "$ref": "./utils.json#/$defs/numberArray"
                 }
             },
-            "required": [
-                "rippleCurrentFrequencyFactorFrequency",
-                "rippleCurrentFrequencyFactorAmplitude",
-                "rippleCurrentTemperatureFactorTemperature",
-                "rippleCurrentTemperatureFactorAmplitude"
-            ]
+            "required": []
         }
     }
 }
