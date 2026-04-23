@@ -113,54 +113,22 @@
                 },
                 "technology": {
                     "description": "Capacitor technology type",
-                    "type": "string",
-                    "enum": [
-                        "Alum. Electrolytic",
-                        "Alum. Polymer",
-                        "Hybrid Polymer",
-                        "Film Capacitor",
-                        "MLCC Class I",
-                        "MLCC Class II",
-                        "MLCC Class I C0G",
-                        "MLCC Class I NP0",
-                        "MLCC Class II X5R",
-                        "MLCC Class II X7R",
-                        "MLCC Class II Y5V",
-                        "MLCC Class II X6S",
-                        "Other"
-                    ]
+                    "type": "string"
                 },
-                "matchcodeDescription": {
-                    "description": "Human-readable description of the part",
+                "description": {
+                    "description": "Description of the part",
                     "type": "string"
                 },
                 "case": {
                     "description": "Case or package code",
                     "type": "string"
-                },
-                "useInDcTool": {
-                    "description": "DC Tool boolean",
-                    "type": [
-                        "boolean",
-                        "null"
-                    ]
-                },
-                "internalViewOnly": {
-                    "description": "Internal view restriction flag",
-                    "type": [
-                        "string",
-                        "null"
-                    ]
                 }
             },
             "required": [
                 "partNumber",
                 "series",
                 "technology",
-                "matchcodeDescription",
                 "case",
-                "useInDcTool",
-                "internalViewOnly"
             ]
         },
         "electrical": {
@@ -239,13 +207,6 @@
                         "null"
                     ]
                 },
-                "esrForLosses": {
-                    "description": "ESR for losses calculation in Ohms",
-                    "type": [
-                        "number",
-                        "null"
-                    ]
-                },
                 "rippleCurrent": {
                     "description": "Ripple current in Amperes",
                     "type": [
@@ -277,20 +238,6 @@
                 },
                 "thermalResistance": {
                     "description": "Thermal resistance in \u00b0C/W",
-                    "type": [
-                        "number",
-                        "null"
-                    ]
-                },
-                "capacitanceSaturationMLCC": {
-                    "description": "Capacitance saturation point for MLCC",
-                    "type": [
-                        "number",
-                        "null"
-                    ]
-                },
-                "vthMLCC": {
-                    "description": "Threshold voltage for MLCC saturation in Volts",
                     "type": [
                         "number",
                         "null"
@@ -456,16 +403,7 @@
                 },
                 "shapeType": {
                     "description": "Shape type",
-                    "type": "string",
-                    "enum": [
-                        "Box type",
-                        "Box Type 4-pin",
-                        "Cylindrical",
-                        "Radial Cylindrical",
-                        "H-Chip",
-                        "SMD Chip",
-                        "V-Chip"
-                    ]
+                    "type": "string"
                 },
                 "volume": {
                     "description": "Component volume in cubic meters",
@@ -507,8 +445,8 @@
                         "null"
                     ]
                 },
-                "vpe": {
-                    "description": "Units per package/reel",
+                "pu": {
+                    "description": "Packaging unit",
                     "type": [
                         "integer",
                         "null"
@@ -542,29 +480,8 @@
                         "null"
                     ]
                 },
-                "wgu": {
-                    "description": "AlphaPlan category group (0090 - standard, 1090 - project, 2090 - special or customized)",
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                },
-                "alphaPlanDescription": {
-                    "description": "Product description in AlphaPlan",
-                    "type": [
-                        "string",
-                        "null"
-                    ]
-                },
                 "priceCost": {
                     "description": "Cost price",
-                    "type": [
-                        "number",
-                        "null"
-                    ]
-                },
-                "weCustomWeight": {
-                    "description": "WE Custom Weight",
                     "type": [
                         "number",
                         "null"
