@@ -61,23 +61,9 @@ Basic part identification. **All fields are required.**
 |---|---|---|---|
 | `partNumber` | string | No | Manufacturer part number |
 | `series` | string | No | Product series name (e.g., "WCAP-ASLI", "WCAP-CSGP") |
-| `technology` | string (enum) | No | Capacitor technology type (see enum values below) |
-| `matchcodeDescription` | string | No | Human-readable description of the part |
+| `technology` | string | No | Capacitor technology type |
+| `description` | string | No | Description of the part |
 | `case` | string | No | Case or package code (e.g., "1210", "6.3x5.5") |
-| `useInDcTool` | boolean | Yes | Flag for DC tool availability |
-| `internalViewOnly` | string | Yes | Internal view restriction flag |
-
-### technology enum values
-
-| Value | Description |
-|---|---|
-| `"Alum. Electrolytic"` | Aluminum electrolytic capacitor |
-| `"Alum. Polymer"` | Aluminum polymer capacitor |
-| `"Hybrid Polymer"` | Hybrid polymer capacitor |
-| `"Film Capacitor"` | Film capacitor (PP, PET, PEN, etc.) |
-| `"MLCC Class I"` | Multilayer ceramic capacitor, Class I dielectric (C0G/NP0) |
-| `"MLCC Class II"` | Multilayer ceramic capacitor, Class II dielectric (X5R/X7R/X7S) |
-| `"Other"` | Other capacitor technology |
 
 ---
 
@@ -97,18 +83,14 @@ Electrical characteristics. **All fields are required.**
 | `insulationResistance` | number | No | Ohms | Insulation resistance between terminals |
 | `esr` | number | Yes | Ohms | Equivalent series resistance (ESR) |
 | `esrFrequency` | number | Yes | Hz | Frequency at which ESR is measured |
-| `esrForLosses` | number | No | Ohms | ESR value used for loss calculations |
 | `rippleCurrent` | number | No | Amperes | Maximum rated ripple current (RMS) |
 | `rippleCurrentFrequency` | number | No | Hz | Frequency at which ripple current is specified |
 | `rippleCurrentTemperature` | number | Yes | degrees C | Temperature at which ripple current is specified |
 | `rippleCurrentFrequencyPoints` | [curve](#curve) | No | -- | Ripple current derating as a function of frequency (X-Y data) |
 | `rippleCurrentTemperaturePoints` | [curve](#curve) | No | -- | Ripple current derating as a function of temperature (X-Y data) |
 | `thermalResistance` | number | Yes | degrees C/W | Thermal resistance from case to ambient |
-| `capacitanceSaturationMLCC` | number | Yes | -- | MLCC DC bias saturation capacitance value |
-| `vthMLCC` | number | Yes | Volts | MLCC threshold voltage for capacitance saturation onset |
 
 **Notes:**
-- `capacitanceSaturationMLCC` and `vthMLCC` are only meaningful for MLCC Class II technology; set to `null` for all other technologies.
 - `rippleCurrentFrequencyPoints` and `rippleCurrentTemperaturePoints` use the [curve](#curve) type. When no curve data is available, use empty arrays for `xData` and `yData`.
 
 ---
@@ -154,7 +136,7 @@ Component shape and assembly information. **All fields are required.**
 | Field | Type | Nullable | Unit | Description |
 |---|---|---|---|---|
 | `assembly` | string (enum) | No | -- | Assembly / mounting type |
-| `shapeType` | string (enum) | No | -- | Physical shape of the component |
+| `shapeType` | string | No | -- | Physical shape of the component |
 | `volume` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | cubic meters | Computed component volume |
 | `footprint` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | square meters | PCB footprint area |
 
@@ -167,18 +149,6 @@ Component shape and assembly information. **All fields are required.**
 | `"SMT"` | Surface mount technology |
 | `"Snap-In"` | Snap-in mounting (large electrolytic capacitors) |
 
-#### shapeType enum values
-
-| Value | Description |
-|---|---|
-| `"Box type"` | Rectangular box (typical for film capacitors) |
-| `"Box Type 4-pin"` | Rectangular box with 4-pin configuration |
-| `"Cylindrical"` | Cylindrical (axial electrolytic or film) |
-| `"Radial Cylindrical"` | Radial-lead cylindrical (most common electrolytic form) |
-| `"H-Chip"` | H-chip SMD package |
-| `"SMD Chip"` | Standard SMD chip package (MLCCs) |
-| `"V-Chip"` | V-chip SMD package (polymer/hybrid SMD electrolytic) |
-
 ---
 
 ## business
@@ -188,15 +158,12 @@ Commercial and supply chain information. **All fields are required.**
 | Field | Type | Nullable | Unit | Description |
 |---|---|---|---|---|
 | `packaging` | string | No | -- | Packaging format (e.g., "Bulk", "Tape & Reel", "Ammo Pack") |
-| `vpe` | integer | No | -- | Units per package/reel |
+| `pu` | integer | No | -- | Packaging unit |
 | `moq` | integer | No | -- | Minimum order quantity |
 | `leadTime` | number | Yes | weeks | Lead time for delivery |
 | `stock` | integer | Yes | -- | Available stock quantity |
 | `distribution` | string | Yes | -- | Distribution channel |
-| `wgu` | string | No | -- | AlphaPlan category group. `"0090"` = standard, `"1090"` = project, `"2090"` = special/customized |
-| `alphaPlanDescription` | string | No | -- | Product description in AlphaPlan ERP system |
 | `priceCost` | number | No | -- | Cost price |
-| `weCustomWeight` | number | No | -- | WE custom weight factor |
 
 ---
 

@@ -134,17 +134,6 @@ CAS includes a complete Arrhenius-based lifetime model for electrolytic and poly
 | `eoUsefulLifeR` | Resistance increase at end of useful life (percent) |
 | `usefulLifeComment` | Additional notes on useful life conditions |
 
-### MLCC DC Bias Derating
-
-MLCC Class II capacitors (X5R, X7R, etc.) lose capacitance as DC bias voltage increases. CAS captures this with two fields in the `electrical` section:
-
-| Field | Description |
-|---|---|
-| `capacitanceSaturationMLCC` | Saturation capacitance value (the capacitance at which DC bias derating flattens out) |
-| `vthMLCC` | Threshold voltage at which significant capacitance loss begins (Volts) |
-
-These fields are `null` for non-MLCC technologies.
-
 ### Ripple Current Derating
 
 Capacitor ripple current capability varies with frequency and temperature. CAS provides two derating mechanisms:
@@ -289,10 +278,8 @@ A simple array of numbers, used for the factor curves in the `factors` section.
           "partNumber": "860010672009",
           "series": "WCAP-ASLI",
           "technology": "Alum. Electrolytic",
-          "matchcodeDescription": "22uF 50V 105C Radial",
-          "case": "6.3x5.5",
-          "useInDcTool": true,
-          "internalViewOnly": null
+          "description": "22uF 50V 105C Radial",
+          "case": "6.3x5.5"
         },
         "electrical": {
           "capacitance": {"nominal": 22e-6},
@@ -305,15 +292,12 @@ A simple array of numbers, used for the factor curves in the `factors` section.
           "insulationResistance": 4e8,
           "esr": 2.7,
           "esrFrequency": 100000,
-          "esrForLosses": 2.7,
           "rippleCurrent": 0.12,
           "rippleCurrentFrequency": 100000,
           "rippleCurrentTemperature": 105,
           "rippleCurrentFrequencyPoints": {"xData": [], "yData": []},
           "rippleCurrentTemperaturePoints": {"xData": [], "yData": []},
-          "thermalResistance": null,
-          "capacitanceSaturationMLCC": null,
-          "vthMLCC": null
+          "thermalResistance": null
         },
         "thermal": {
           "temperature": {"minimum": -40, "nominal": 25, "maximum": 105},
@@ -338,15 +322,12 @@ A simple array of numbers, used for the factor curves in the `factors` section.
         },
         "business": {
           "packaging": "Bulk",
-          "vpe": 500,
+          "pu": 500,
           "moq": 500,
           "leadTime": null,
           "stock": null,
           "distribution": null,
-          "wgu": "0090",
-          "alphaPlanDescription": "WCAP-ASLI 22uF 50V",
-          "priceCost": 0.05,
-          "weCustomWeight": 0.8
+          "priceCost": 0.05
         },
         "lifetime": {
           "lifetimeEndurance": 2000,
@@ -394,10 +375,8 @@ A simple array of numbers, used for the factor curves in the `factors` section.
           "partNumber": "885012207098",
           "series": "WCAP-CSGP",
           "technology": "MLCC Class II",
-          "matchcodeDescription": "10uF 25V X7R 1210",
-          "case": "1210",
-          "useInDcTool": true,
-          "internalViewOnly": null
+          "description": "10uF 25V X7R 1210",
+          "case": "1210"
         },
         "electrical": {
           "capacitance": {"minimum": 8e-6, "nominal": 10e-6, "maximum": 12e-6},
@@ -410,15 +389,12 @@ A simple array of numbers, used for the factor curves in the `factors` section.
           "insulationResistance": 1e10,
           "esr": 0.005,
           "esrFrequency": 1000000,
-          "esrForLosses": 0.005,
           "rippleCurrent": 3.0,
           "rippleCurrentFrequency": 100000,
           "rippleCurrentTemperature": 25,
           "rippleCurrentFrequencyPoints": {"xData": [], "yData": []},
           "rippleCurrentTemperaturePoints": {"xData": [], "yData": []},
-          "thermalResistance": 50,
-          "capacitanceSaturationMLCC": 4e-6,
-          "vthMLCC": 12.5
+          "thermalResistance": 50
         },
         "thermal": {
           "temperature": {"minimum": -55, "nominal": 25, "maximum": 125},
@@ -443,15 +419,12 @@ A simple array of numbers, used for the factor curves in the `factors` section.
         },
         "business": {
           "packaging": "Tape & Reel",
-          "vpe": 4000,
+          "pu": 4000,
           "moq": 4000,
           "leadTime": null,
           "stock": null,
           "distribution": null,
-          "wgu": "0090",
-          "alphaPlanDescription": "WCAP-CSGP 10uF 25V X7R",
-          "priceCost": 0.03,
-          "weCustomWeight": 0.3
+          "priceCost": 0.03
         },
         "lifetime": {
           "lifetimeEndurance": null,
