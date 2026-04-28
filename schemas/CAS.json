@@ -8,7 +8,8 @@
     "properties": {
         "inputs": {
             "description": "Design requirements and operating points for this capacitor",
-            "type": "object"
+            "title": "inputs",
+            "$ref": "./inputs.json"
         },
         "capacitor": {
             "description": "The capacitor component data",
