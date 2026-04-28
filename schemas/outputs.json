@@ -1,0 +1,298 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "http://openconverters.com/schemas/CAS/outputs.json",
+    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "title": "outputs",
+    "description": "Outputs computed for one operating point of a capacitor. Mirrors MAS schemas/outputs.json structure: each named block is independently optional so partial computations validate, and every block carries the EAS outputBase {origin, methodUsed} provenance shell. The top-level CAS document holds an array of these — outputs[i] aligns positionally with inputs.operatingPoints[i].",
+    "type": "object",
+    "properties": {
+        "esrLosses": {
+            "description": "Power dissipated by the equivalent series resistance under the ripple current of this operating point.",
+            "$ref": "#/$defs/esrLossesOutput"
+        },
+        "temperature": {
+            "description": "Temperature rise above ambient caused by self-heating at this operating point.",
+            "$ref": "#/$defs/temperatureOutput"
+        },
+        "effectiveCapacitance": {
+            "description": "Effective capacitance after applying DC bias and temperature derating (relevant for MLCC Class II).",
+            "$ref": "#/$defs/effectiveCapacitanceOutput"
+        },
+        "impedance": {
+            "description": "|Z| and phase vs. frequency through the self-resonant frequency.",
+            "$ref": "#/$defs/impedanceOutput"
+        },
+        "rippleVoltage": {
+            "description": "Ripple voltage across the capacitor terminals at this operating point.",
+            "$ref": "#/$defs/rippleVoltageOutput"
+        },
+        "lifetime": {
+            "description": "Predicted lifetime under the stress of this operating point.",
+            "$ref": "#/$defs/lifetimeOutput"
+        },
+        "reliability": {
+            "description": "Failure rate / FIT figure under this operating point.",
+            "$ref": "#/$defs/reliabilityOutput"
+        },
+        "insulation": {
+            "description": "Insulation coordination figures (for film safety / Y-class capacitors).",
+            "$ref": "../../EAS/schemas/outputs/insulationCoordination.json"
+        }
+    },
+    "required": [],
+    "$defs": {
+        "esrLossesOutput": {
+            "title": "esrLossesOutput",
+            "allOf": [
+                {
+                    "$ref": "../../EAS/schemas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "totalLosses": {
+                            "description": "Total dissipation in the capacitor at this operating point, in W.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "esr": {
+                            "description": "Equivalent series resistance used in the calculation, in Ohm.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "rippleCurrentRms": {
+                            "description": "RMS ripple current through the capacitor, in A.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "lossesPerHarmonic": {
+                            "description": "Frequency-resolved loss spectrum, useful when ESR is strongly frequency-dependent.",
+                            "$ref": "../../EAS/schemas/outputs/lossElementPerHarmonic.json"
+                        },
+                        "conditions": {
+                            "$ref": "../../EAS/schemas/outputs/measurementCondition.json"
+                        }
+                    },
+                    "required": [
+                        "totalLosses"
+                    ]
+                }
+            ]
+        },
+        "temperatureOutput": {
+            "title": "temperatureOutput",
+            "allOf": [
+                {
+                    "$ref": "../../EAS/schemas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "ambientTemperature": {
+                            "description": "Ambient temperature assumed for this calculation, in Celsius.",
+                            "type": "number"
+                        },
+                        "temperatureRise": {
+                            "description": "Self-heating temperature rise above ambient, in Kelvin.",
+                            "type": "number"
+                        },
+                        "hotSpotTemperature": {
+                            "description": "Hottest predicted temperature in the capacitor body (typically core for electrolytics), in Celsius.",
+                            "type": "number"
+                        },
+                        "thermalResistance": {
+                            "description": "Effective thermal resistance from hot spot to ambient used in the calculation, in K/W.",
+                            "type": "number"
+                        }
+                    },
+                    "required": [
+                        "hotSpotTemperature"
+                    ]
+                }
+            ]
+        },
+        "effectiveCapacitanceOutput": {
+            "title": "effectiveCapacitanceOutput",
+            "description": "Capacitance value after DC-bias and temperature derating. Headline is `effectiveCapacitance`; the derating factor and the rated nominal are also exposed so the caller can see how much was lost.",
+            "allOf": [
+                {
+                    "$ref": "../../EAS/schemas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "effectiveCapacitance": {
+                            "description": "Effective capacitance under the operating point's DC bias and temperature, in F.",
+                            "$ref": "../../EAS/schemas/utils.json#/$defs/dimensionWithTolerance"
+                        },
+                        "deratingFactor": {
+                            "description": "Effective / rated, dimensionless. 1.0 means no derating.",
+                            "type": "number",
+                            "exclusiveMinimum": 0,
+                            "maximum": 1
+                        },
+                        "ratedCapacitance": {
+                            "description": "Nominal capacitance from the datasheet used as the baseline, in F.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "conditions": {
+                            "$ref": "../../EAS/schemas/outputs/measurementCondition.json"
+                        }
+                    },
+                    "required": [
+                        "effectiveCapacitance"
+                    ]
+                }
+            ]
+        },
+        "impedanceOutput": {
+            "title": "impedanceOutput",
+            "allOf": [
+                {
+                    "$ref": "../../EAS/schemas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "impedanceMatrix": {
+                            "description": "Complex impedance vs. frequency. For a two-terminal cap each matrix is 1x1.",
+                            "type": "array",
+                            "items": {
+                                "$ref": "../../EAS/schemas/outputs/complexMatrixAtFrequency.json"
+                            }
+                        },
+                        "selfResonantFrequency": {
+                            "description": "Frequency at which |Z| is minimum, in Hz.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "esrAtSelfResonance": {
+                            "description": "ESR (real part of impedance) at the self-resonant frequency, in Ohm.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "esl": {
+                            "description": "Equivalent series inductance extracted from the impedance curve, in H.",
+                            "type": "number",
+                            "minimum": 0
+                        }
+                    },
+                    "required": [
+                        "impedanceMatrix"
+                    ]
+                }
+            ]
+        },
+        "rippleVoltageOutput": {
+            "title": "rippleVoltageOutput",
+            "allOf": [
+                {
+                    "$ref": "../../EAS/schemas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "peakToPeak": {
+                            "description": "Peak-to-peak ripple voltage across the capacitor terminals, in V.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "rms": {
+                            "description": "RMS ripple voltage, in V.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "perHarmonic": {
+                            "description": "Per-harmonic decomposition of the ripple voltage spectrum.",
+                            "$ref": "../../EAS/schemas/outputs/lossElementPerHarmonic.json"
+                        }
+                    }
+                }
+            ]
+        },
+        "lifetimeOutput": {
+            "title": "lifetimeOutput",
+            "allOf": [
+                {
+                    "$ref": "../../EAS/schemas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "predictedHours": {
+                            "description": "Predicted lifetime under this operating point, in hours.",
+                            "$ref": "../../EAS/schemas/utils.json#/$defs/dimensionWithTolerance"
+                        },
+                        "predictedYears": {
+                            "description": "Predicted lifetime, in years (= predictedHours / (24*365)).",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "accelerationFactor": {
+                            "description": "Lifetime acceleration vs. nameplate (rated lifetime / predicted lifetime). >1 means harsher than rated.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "ratedLifetime": {
+                            "description": "Rated lifetime from the datasheet at maximum temperature and rated ripple, in hours.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "endOfLifeReached": {
+                            "description": "Whether the predicted operating life exceeds the design's required lifetime.",
+                            "type": "boolean"
+                        },
+                        "endOfLifeMode": {
+                            "description": "Predicted dominant end-of-life mechanism.",
+                            "type": "string",
+                            "enum": [
+                                "capacitanceDrop",
+                                "esrRise",
+                                "openCircuit",
+                                "shortCircuit",
+                                "electrolyteDryOut",
+                                "dielectricBreakdown"
+                            ]
+                        },
+                        "conditions": {
+                            "$ref": "../../EAS/schemas/outputs/measurementCondition.json"
+                        }
+                    },
+                    "required": [
+                        "predictedHours"
+                    ]
+                }
+            ]
+        },
+        "reliabilityOutput": {
+            "title": "reliabilityOutput",
+            "allOf": [
+                {
+                    "$ref": "../../EAS/schemas/outputs/outputBase.json"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "fit": {
+                            "description": "Failure In Time, in failures per 10^9 device-hours.",
+                            "type": "number",
+                            "minimum": 0
+                        },
+                        "mtbf": {
+                            "description": "Mean time between failures, in hours.",
+                            "type": "number",
+                            "exclusiveMinimum": 0
+                        },
+                        "confidenceLevel": {
+                            "description": "Confidence level at which fit / mtbf are reported (e.g. 0.6 for 60%, 0.9 for 90%).",
+                            "type": "number",
+                            "exclusiveMinimum": 0,
+                            "maximum": 1
+                        }
+                    }
+                }
+            ]
+        }
+    }
+}

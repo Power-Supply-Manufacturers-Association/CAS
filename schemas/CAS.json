@@ -17,8 +17,12 @@
             "$ref": "./capacitor.json"
         },
         "outputs": {
-            "description": "Computed results (ESR losses, thermal, lifetime, etc.)",
-            "type": ["object", "array"]
+            "description": "Computed results per operating point. outputs[i] aligns positionally with inputs.operatingPoints[i]. Mirrors the MAS pattern (array of per-operating-point bundles).",
+            "title": "outputs",
+            "type": "array",
+            "items": {
+                "$ref": "./outputs.json"
+            }
         }
     },
     "required": ["inputs", "capacitor", "outputs"]
