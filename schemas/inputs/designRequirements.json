@@ -13,7 +13,7 @@
             "properties": {
                 "capacitance": {
                     "description": "Required values for the capacitance, in F",
-                    "$ref": "../utils.json#/$defs/dimensionWithTolerance"
+                    "$ref": "../../../EAS/schemas/utils.json#/$defs/dimensionWithTolerance"
                 },
                 "ratedVoltage": {
                     "description": "Minimum required rated DC voltage, in V",
