@@ -15,7 +15,7 @@
 
 **CAS is a standardized way to describe capacitor components** used in power electronics -- from tiny MLCCs on a gate driver to large aluminum electrolytics on a DC bus. It defines everything needed to select, simulate, and predict the lifetime of a capacitor in a single, machine-readable JSON document.
 
-CAS is part of the **EAS (Electronic Agnostic Structure)** family of schemas. EAS is the universal container for any electronic component; CAS, MAS (magnetics), SAS (semiconductors), and RAS (resistors) are its domain-specific children. Every valid CAS document is also a valid EAS document.
+CAS is part of the **PEAS (Power Electronics Agnostic Structure)** family of schemas. PEAS is the universal container for any electronic component; CAS, MAS (magnetics), SAS (semiconductors), and RAS (resistors) are its domain-specific children. Every valid CAS document is also a valid PEAS document.
 
 ### The Problem CAS Solves
 
@@ -31,17 +31,17 @@ Capacitor selection in power electronics is deceptively complex. You need:
 
 This information is scattered across datasheets, manufacturer tools, and spreadsheets. **CAS captures it all in one file.**
 
-### Relationship to EAS and Sibling Schemas
+### Relationship to PEAS and Sibling Schemas
 
 ```
-EAS (Electronic Agnostic Structure)
+PEAS (Power Electronics Agnostic Structure)
  |-- MAS  (Magnetic Agnostic Structure)      -- inductors, transformers, chokes
  |-- CAS  (Capacitor Agnostic Structure)     -- capacitors (this schema)
  |-- SAS  (Semiconductor Agnostic Structure) -- MOSFETs, diodes, IGBTs
  |-- RAS  (Resistor Agnostic Structure)      -- resistors
 ```
 
-A CAS document wraps a `capacitor` object with `inputs` (operating conditions) and `outputs` (computed results such as ESR losses, thermal rise, and remaining lifetime), forming a complete EAS document.
+A CAS document wraps a `capacitor` object with `inputs` (operating conditions) and `outputs` (computed results such as ESR losses, thermal rise, and remaining lifetime), forming a complete PEAS document.
 
 ### CAS/data/ vs TAS/data/
 
@@ -66,7 +66,7 @@ CAS supports all major capacitor technologies used in power electronics:
 
 ## Schema Overview
 
-Every CAS document follows the three-section EAS pattern:
+Every CAS document follows the three-section PEAS pattern:
 
 ```
 +------------------+     +------------------+     +------------------+

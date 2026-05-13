@@ -11,7 +11,7 @@
             "title": "operatingPoints",
             "type": "array",
             "items": {
-                "$ref": "../../EAS/schemas/inputs/twoTerminalOperatingPoint.json"
+                "$ref": "../../PEAS/schemas/inputs/twoTerminalOperatingPoint.json"
             },
             "minItems": 1
         },

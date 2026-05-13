@@ -35,10 +35,10 @@
     ],
     "$defs": {
         "manufacturerInfo": {
-            "description": "Container for manufacturer-specific information about the capacitor \u2014 extends EAS base with capacitor-specific datasheetInfo.",
+            "description": "Container for manufacturer-specific information about the capacitor \u2014 extends PEAS base with capacitor-specific datasheetInfo.",
             "allOf": [
                 {
-                    "$ref": "http://openconverters.com/schemas/EAS/utils.json#/$defs/manufacturerInfo"
+                    "$ref": "http://openconverters.com/schemas/PEAS/utils.json#/$defs/manufacturerInfo"
                 },
                 {
                     "type": "object",

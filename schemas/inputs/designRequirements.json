@@ -3,17 +3,17 @@
     "$id": "http://openconverters.com/schemas/CAS/inputs/designRequirements.json",
     "$comment": "SPDX-License-Identifier: Apache-2.0",
     "title": "designRequirements",
-    "description": "The list of requirements that a given capacitor must comply with. Built on top of the EAS designRequirementsBase mixin (shared name/market/topology/operatingTemperature/terminalType/maximumWeight/maximumDimensions) plus capacitor-specific fields and a narrowed role/allowedTechnologies enum.",
+    "description": "The list of requirements that a given capacitor must comply with. Built on top of the PEAS designRequirementsBase mixin (shared name/market/topology/operatingTemperature/terminalType/maximumWeight/maximumDimensions) plus capacitor-specific fields and a narrowed role/allowedTechnologies enum.",
     "allOf": [
         {
-            "$ref": "../../../EAS/schemas/utils.json#/$defs/designRequirementsBase"
+            "$ref": "../../../PEAS/schemas/utils.json#/$defs/designRequirementsBase"
         },
         {
             "type": "object",
             "properties": {
                 "capacitance": {
                     "description": "Required values for the capacitance, in F",
-                    "$ref": "../../../EAS/schemas/utils.json#/$defs/dimensionWithTolerance"
+                    "$ref": "../../../PEAS/schemas/utils.json#/$defs/dimensionWithTolerance"
                 },
                 "ratedVoltage": {
                     "description": "Minimum required rated DC voltage, in V",
@@ -50,10 +50,10 @@
                     ]
                 },
                 "application": {
-                    "$ref": "../../../EAS/schemas/utils.json#/$defs/capacitorApplication"
+                    "$ref": "../../../PEAS/schemas/utils.json#/$defs/capacitorApplication"
                 },
                 "subApplication": {
-                    "$ref": "../../../EAS/schemas/utils.json#/$defs/capacitorSubApplication"
+                    "$ref": "../../../PEAS/schemas/utils.json#/$defs/capacitorSubApplication"
                 },
                 "allowedTechnologies": {
                     "description": "Subset of capacitor technologies acceptable for this design. If absent, all technologies are allowed.",

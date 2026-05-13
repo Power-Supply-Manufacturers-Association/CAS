@@ -8,27 +8,27 @@ CAS is a **schema-only repository** — no source code, no build, no test runner
 
 ## Layout
 
-- `schemas/CAS.json` — top-level wrapper: `{ inputs, capacitor, outputs }`. Every valid CAS document is also a valid EAS document.
+- `schemas/CAS.json` — top-level wrapper: `{ inputs, capacitor, outputs }`. Every valid CAS document is also a valid PEAS document.
 - `schemas/capacitor.json` — the capacitor object. Wrapped in `manufacturerInfo.datasheetInfo`, which contains the eight required sections: `part`, `electrical`, `thermal`, `mechanical`, `business`, `lifetime`, `modelParams`, `factors`.
-- `schemas/utils.json` — **redirect shim** to `../../EAS/schemas/utils.json`. Shared types (`dimensionWithTolerance`, `curve`, `numberArray`, `distributorInfo`, `manufacturerInfo` base) live in EAS, not here.
+- `schemas/utils.json` — **redirect shim** to `../../PEAS/schemas/utils.json`. Shared types (`dimensionWithTolerance`, `curve`, `numberArray`, `distributorInfo`, `manufacturerInfo` base) live in PEAS, not here.
 - `docs/schema.md` — field-by-field reference. Keep in sync with `schemas/capacitor.json`.
 - `data/capacitors.ndjson` — manufacturing **building blocks** only (foils, dielectrics, electrolytes). **Finished orderable parts belong in TAS, not CAS.**
 
-## EAS / MAS layout (sibling repos)
+## PEAS / MAS layout (sibling repos)
 
-This repo is one of four siblings under the EAS umbrella. Expected checkout layout (verified at `/home/alf/PSMA/`):
+This repo is one of four siblings under the PEAS umbrella. Expected checkout layout (verified at `/home/alf/PSMA/`):
 
 ```
 PSMA/
-  EAS/   schemas/{eas.json, utils.json}              -- parent + shared utils
+  PEAS/   schemas/{peas.json, utils.json}              -- parent + shared utils
   MAS/   schemas/{MAS.json, inputs.json, magnetic.json, outputs.json, utils.json, inputs/, magnetic/, outputs/, conformance/}
   CAS/   schemas/{CAS.json, capacitor.json, utils.json (shim)}
-  (SAS, RAS — referenced by EAS but not present here yet)
+  (SAS, RAS — referenced by PEAS but not present here yet)
 ```
 
-**EAS as parent:** `EAS/schemas/eas.json` is the universal wrapper. It declares `inputs`/`outputs` and a top-level `oneOf` over `magnetic` (→ MAS), `capacitor` (→ CAS, via relative path `../../CAS/schemas/capacitor.json`), `semiconductor`, `resistor`. So a valid CAS document must also satisfy that branch of EAS.
+**PEAS as parent:** `PEAS/schemas/peas.json` is the universal wrapper. It declares `inputs`/`outputs` and a top-level `oneOf` over `magnetic` (→ MAS), `capacitor` (→ CAS, via relative path `../../CAS/schemas/capacitor.json`), `semiconductor`, `resistor`. So a valid CAS document must also satisfy that branch of PEAS.
 
-**EAS utils unify CAS/RAS/SAS only — not MAS.** `EAS/schemas/utils.json` explicitly states *"MAS remains self-contained and does not reference this file."* It provides shared primitives (`dimensionWithTolerance`, `curve`, `numberArray`, `connectionType`, `distributorInfo`, `substituteInfo`) **and** the `datasheetInfo*` mixins (`Thermal`, `Mechanical`, `Business`) plus base `manufacturerInfo`. CAS's `schemas/utils.json` is a shim to this file, and `capacitor.json`'s `manufacturerInfo` is `allOf [EAS base, capacitor-specific datasheetInfo]`. Do not duplicate these into CAS — extend the EAS base.
+**PEAS utils unify CAS/RAS/SAS only — not MAS.** `PEAS/schemas/utils.json` explicitly states *"MAS remains self-contained and does not reference this file."* It provides shared primitives (`dimensionWithTolerance`, `curve`, `numberArray`, `connectionType`, `distributorInfo`, `substituteInfo`) **and** the `datasheetInfo*` mixins (`Thermal`, `Mechanical`, `Business`) plus base `manufacturerInfo`. CAS's `schemas/utils.json` is a shim to this file, and `capacitor.json`'s `manufacturerInfo` is `allOf [PEAS base, capacitor-specific datasheetInfo]`. Do not duplicate these into CAS — extend the PEAS base.
 
 **MAS does its own thing.** `MAS/schemas/MAS.json` adds `masVersion` (SemVer) and `masConformance` (class A/B/C) at the top level, makes `outputs` an array, and uses its own `MAS/schemas/utils.json`. When borrowing MAS conventions for CAS, copy the *shape*, not the references.
 
@@ -53,4 +53,4 @@ When asked to formalize CAS `inputs`, the natural mapping is: capacitor `operati
 
 ## Sibling schemas
 
-CAS is part of the EAS family: MAS (magnetics), CAS (this), SAS (semiconductors), RAS (resistors). Cross-domain primitives, the `datasheetInfo*` mixins, and the `manufacturerInfo` base live in `EAS/schemas/utils.json` and are inherited by CAS/RAS/SAS — MAS is intentionally self-contained.
+CAS is part of the PEAS family: MAS (magnetics), CAS (this), SAS (semiconductors), RAS (resistors). Cross-domain primitives, the `datasheetInfo*` mixins, and the `manufacturerInfo` base live in `PEAS/schemas/utils.json` and are inherited by CAS/RAS/SAS — MAS is intentionally self-contained.
