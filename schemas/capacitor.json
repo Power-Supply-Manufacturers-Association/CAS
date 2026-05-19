@@ -13,7 +13,7 @@
             "description": "Where to buy this component",
             "type": "array",
             "items": {
-                "$ref": "./utils.json#/$defs/distributorInfo"
+                "$ref": "https://psma.com/peas/utils.json#/$defs/distributorInfo"
             }
         },
         "capacitor": {
@@ -138,7 +138,7 @@
             "properties": {
                 "capacitance": {
                     "description": "Capacitance value in Farads",
-                    "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                 },
                 "capacitanceDriftLongTermPercent": {
                     "description": "End-of-life capacitance change in percent (decrease)",
@@ -230,11 +230,11 @@
                 },
                 "rippleCurrentFrequencyPoints": {
                     "description": "Ripple current derating curve as a function of frequency",
-                    "$ref": "./utils.json#/$defs/curve"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
                 },
                 "rippleCurrentTemperaturePoints": {
                     "description": "Ripple current derating curve as a function of temperature",
-                    "$ref": "./utils.json#/$defs/curve"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
                 },
                 "thermalResistance": {
                     "description": "Thermal resistance in \u00b0C/W",
@@ -266,13 +266,13 @@
             "properties": {
                 "temperature": {
                     "description": "Operating temperature in \u00b0C",
-                    "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                 },
                 "tcc": {
                     "description": "Capacitance change over temperature range",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -312,7 +312,7 @@
                     "description": "Diameter in meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -323,7 +323,7 @@
                     "description": "Width / A dimension in meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -334,7 +334,7 @@
                     "description": "Length / B dimension in meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -345,7 +345,7 @@
                     "description": "Height dimension in meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -356,7 +356,7 @@
                     "description": "Pin pitch spacing in meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -367,7 +367,7 @@
                     "description": "Pin diameter in meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -378,7 +378,7 @@
                     "description": "Pin length in meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -411,7 +411,7 @@
                     "description": "Component volume in cubic meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -422,7 +422,7 @@
                     "description": "PCB footprint area in square meters",
                     "oneOf": [
                         {
-                            "$ref": "./utils.json#/$defs/dimensionWithTolerance"
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         {
                             "type": "null"
@@ -634,19 +634,19 @@
             "properties": {
                 "rippleCurrentFrequencyFactorFrequency": {
                     "description": "Frequency values for ripple current derating curve",
-                    "$ref": "./utils.json#/$defs/numberArray"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/numberArray"
                 },
                 "rippleCurrentFrequencyFactorAmplitude": {
                     "description": "Derating factors at specified frequencies",
-                    "$ref": "./utils.json#/$defs/numberArray"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/numberArray"
                 },
                 "rippleCurrentTemperatureFactorTemperature": {
                     "description": "Temperature values for ripple current derating curve",
-                    "$ref": "./utils.json#/$defs/numberArray"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/numberArray"
                 },
                 "rippleCurrentTemperatureFactorAmplitude": {
                     "description": "Derating factors at specified temperatures",
-                    "$ref": "./utils.json#/$defs/numberArray"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/numberArray"
                 }
             },
             "required": []
