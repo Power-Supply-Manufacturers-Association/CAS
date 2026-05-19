@@ -1,7 +1,7 @@
 {
     "description": "The description of a capacitor",
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "http://openconverters.com/schemas/CAS/capacitor.json",
+    "$id": "https://psma.com/cas/capacitor.json",
     "title": "capacitor",
     "type": "object",
     "additionalProperties": false,
@@ -38,7 +38,7 @@
             "description": "Container for manufacturer-specific information about the capacitor \u2014 extends PEAS base with capacitor-specific datasheetInfo.",
             "allOf": [
                 {
-                    "$ref": "http://openconverters.com/schemas/PEAS/utils.json#/$defs/manufacturerInfo"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/manufacturerInfo"
                 },
                 {
                     "type": "object",

@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "http://openconverters.com/schemas/CAS/outputs.json",
+    "$id": "https://psma.com/cas/outputs.json",
     "$comment": "SPDX-License-Identifier: Apache-2.0",
     "title": "outputs",
     "description": "Outputs computed for one operating point of a capacitor. Mirrors MAS schemas/outputs.json structure: each named block is independently optional so partial computations validate, and every block carries the PEAS outputBase {origin, methodUsed} provenance shell. The top-level CAS document holds an array of these — outputs[i] aligns positionally with inputs.operatingPoints[i].",
