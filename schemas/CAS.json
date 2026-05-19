@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "http://openconverters.com/schemas/CAS/CAS.json",
+    "$id": "https://psma.com/cas/CAS.json",
     "title": "CAS",
     "description": "Capacitor Agnostic Structure (CAS). When wrapped with inputs + outputs, forms a valid PEAS document.",
     "type": "object",

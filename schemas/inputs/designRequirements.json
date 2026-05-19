@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "http://openconverters.com/schemas/CAS/inputs/designRequirements.json",
+    "$id": "https://psma.com/cas/inputs/designRequirements.json",
     "$comment": "SPDX-License-Identifier: Apache-2.0",
     "title": "designRequirements",
     "description": "The list of requirements that a given capacitor must comply with. Built on top of the PEAS designRequirementsBase mixin (shared name/market/topology/operatingTemperature/terminalType/maximumWeight/maximumDimensions) plus capacitor-specific fields and a narrowed role/allowedTechnologies enum.",
