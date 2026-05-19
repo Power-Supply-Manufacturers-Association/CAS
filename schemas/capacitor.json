@@ -112,8 +112,34 @@
                     "type": "string"
                 },
                 "technology": {
-                    "description": "Capacitor technology type",
-                    "type": "string"
+                    "description": "Capacitor technology / chemistry family. Closed enum so downstream selection logic can dispatch on chemistry without parsing free-form strings. Ceramic class is the dielectric-temperature behaviour family (class-1 = temperature-stable C0G/NP0; class-2 = X7R/X5R/Y5V high-K, voltage- and temperature-dependent; class-3 = Y5U etc.). The standard EIA/MIL dielectric code (e.g. X7R, C0G) goes in dielectricCode.",
+                    "enum": [
+                        "aluminum-electrolytic-wet",
+                        "aluminum-electrolytic-polymer",
+                        "aluminum-hybrid-polymer",
+                        "tantalum-wet",
+                        "tantalum-mno2",
+                        "tantalum-polymer",
+                        "niobium-oxide",
+                        "ceramic-class-1",
+                        "ceramic-class-2",
+                        "ceramic-class-3",
+                        "film-polypropylene",
+                        "film-polyester",
+                        "film-polyphenylene-sulfide",
+                        "film-paper",
+                        "mica",
+                        "supercapacitor-edlc",
+                        "supercapacitor-hybrid",
+                        "vacuum"
+                    ]
+                },
+                "dielectricCode": {
+                    "description": "Standard EIA / MIL dielectric code (e.g. X7R, X5R, C0G, NP0, Y5V, Y5U). Applies to ceramic technologies only; null or absent for non-ceramic chemistries.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 },
                 "description": {
                     "description": "Description of the part",
@@ -158,6 +184,13 @@
                     "description": "Rated voltage in Volts",
                     "type": "number"
                 },
+                "polarized": {
+                    "description": "True for polarized capacitors (aluminum electrolytic, tantalum, tantalum-polymer, niobium-oxide, supercapacitor-EDLC) that must see voltage of one fixed polarity only. False for ceramic, film, mica and other symmetric chemistries. Null when the librarian could not determine polarity from the datasheet — downstream selection logic should treat null as 'unknown, do not allow AC swing' (conservative).",
+                    "type": [
+                        "boolean",
+                        "null"
+                    ]
+                },
                 "voltageRatedDcMax": {
                     "description": "Maximum DC rated voltage in Volts",
                     "type": [
@@ -173,11 +206,15 @@
                     ]
                 },
                 "dissipationFactorFrequency": {
-                    "description": "Frequency at which dissipation factor is measured in Hz",
+                    "description": "Frequency at which the single-point dissipationFactor field above is measured, in Hz. Prefer dissipationFactorPoints for selection logic; this scalar pair is kept only for legacy datasheet values where no curve is available.",
                     "type": [
                         "number",
                         "null"
                     ]
+                },
+                "dissipationFactorPoints": {
+                    "description": "Dissipation-factor-vs-frequency curve. xData = frequency in Hz, yData = tan delta as fraction (e.g. 0.025 for 2.5%). Same frequency-dependence motivation as esrPoints — DF and ESR are linked through DF = ESR * omega * C, so any chemistry whose ESR rises sharply at low frequency also shows a corresponding rise in DF. Selection logic must prefer this curve over the scalar dissipationFactor field when present.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
                 },
                 "leakageCurrent": {
                     "description": "Leakage current in Amperes",
@@ -201,11 +238,15 @@
                     ]
                 },
                 "esrFrequency": {
-                    "description": "Frequency at which ESR is measured in Hz",
+                    "description": "Frequency at which the single-point esr field above is measured, in Hz. Prefer esrPoints for selection logic; this scalar pair is kept only for legacy datasheet values where no curve is available.",
                     "type": [
                         "number",
                         "null"
                     ]
+                },
+                "esrPoints": {
+                    "description": "ESR-vs-frequency curve. xData = frequency in Hz, yData = ESR in Ohms. Captures the strong frequency dependence of ESR for class-2 ceramic and polymer chemistries — at low frequency (sub-kHz, e.g. 50/60 Hz mains) ESR can be one to two orders of magnitude larger than its 100 kHz datasheet value (see https://passive-components.eu/esr-of-capacitors-mechanisms-measurements-and-impact-to-applications/ Fig. 4). Selection logic must prefer this curve over the scalar esr field when present.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
                 },
                 "rippleCurrent": {
                     "description": "Ripple current in Amperes",
