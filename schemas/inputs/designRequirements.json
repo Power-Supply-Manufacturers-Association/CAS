@@ -6,14 +6,14 @@
     "description": "The list of requirements that a given capacitor must comply with. Built on top of the PEAS designRequirementsBase mixin (shared name/market/topology/operatingTemperature/terminalType/maximumWeight/maximumDimensions) plus capacitor-specific fields and a narrowed role/allowedTechnologies enum.",
     "allOf": [
         {
-            "$ref": "../../../PEAS/schemas/utils.json#/$defs/designRequirementsBase"
+            "$ref": "https://psma.com/peas/utils.json#/$defs/designRequirementsBase"
         },
         {
             "type": "object",
             "properties": {
                 "capacitance": {
                     "description": "Required values for the capacitance, in F",
-                    "$ref": "../../../PEAS/schemas/utils.json#/$defs/dimensionWithTolerance"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                 },
                 "ratedVoltage": {
                     "description": "Minimum required rated DC voltage, in V",
@@ -50,10 +50,10 @@
                     ]
                 },
                 "application": {
-                    "$ref": "../../../PEAS/schemas/utils.json#/$defs/capacitorApplication"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/capacitorApplication"
                 },
                 "subApplication": {
-                    "$ref": "../../../PEAS/schemas/utils.json#/$defs/capacitorSubApplication"
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/capacitorSubApplication"
                 },
                 "allowedTechnologies": {
                     "description": "Subset of capacitor technologies acceptable for this design. If absent, all technologies are allowed.",

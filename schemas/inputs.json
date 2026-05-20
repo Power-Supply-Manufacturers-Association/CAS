@@ -11,7 +11,7 @@
             "title": "operatingPoints",
             "type": "array",
             "items": {
-                "$ref": "../../PEAS/schemas/inputs/twoTerminalOperatingPoint.json"
+                "$ref": "https://psma.com/peas/inputs/twoTerminalOperatingPoint.json"
             },
             "minItems": 1
         },
