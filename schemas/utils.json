@@ -3,5 +3,5 @@
     "$id": "https://psma.com/cas/utils.json",
     "title": "CAS utils",
     "description": "Redirect shim — all definitions live in PEAS/schemas/utils.json.",
-    "$ref": "../../PEAS/schemas/utils.json"
+    "$ref": "https://psma.com/peas/utils.json"
 }
