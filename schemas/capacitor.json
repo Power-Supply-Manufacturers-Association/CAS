@@ -90,6 +90,13 @@
                 "factors": {
                     "description": "Derating factors for frequency and temperature",
                     "$ref": "#/$defs/factors"
+                },
+                "application": {
+                    "description": "Manufacturer's recommended application / quality-grade categories, comma-joined as printed in the catalogue (e.g. Taiyo Yuden's grade taxonomy: 'Auto. (Powertrain/Safety)', 'Auto. (Body/Info) & High Reliability', 'Telecom-Infrastructure & Industrial', 'Medical (International Class. Ⅲ）', 'Medical (International Class. I ・ II)', 'General Equipment', 'Mobile Devices'). Free-form string — taxonomies are manufacturer-specific.",
+                    "type": [
+                        "string",
+                        "null"
+                    ]
                 }
             },
             "required": [
@@ -216,6 +223,20 @@
                     "description": "Dissipation-factor-vs-frequency curve. xData = frequency in Hz, yData = tan delta as fraction (e.g. 0.025 for 2.5%). Same frequency-dependence motivation as esrPoints — DF and ESR are linked through DF = ESR * omega * C, so any chemistry whose ESR rises sharply at low frequency also shows a corresponding rise in DF. Selection logic must prefer this curve over the scalar dissipationFactor field when present.",
                     "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
                 },
+                "qFactor": {
+                    "description": "Quality factor (dimensionless, Q = 1/tan delta) as specified on the datasheet — for class-1 (C0G/NP0) MLCCs this is the specified MINIMUM Q at the standard measurement condition (EIA-198 / IEC 60384: Q ≥ 1000 for C ≥ 30 pF, Q ≥ 400 + 20·C[pF] below 30 pF, measured at 1 MHz, 1 Vrms). Q is strongly frequency-dependent, so pair this scalar with qFactorFrequency when the measurement frequency is known; absent qFactorFrequency means 'datasheet minimum at the manufacturer's standard condition', not a broadband value.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "qFactorFrequency": {
+                    "description": "Frequency at which the qFactor field above is specified, in Hz. Null or absent when the datasheet states only the standard-condition minimum without an explicit frequency.",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
                 "leakageCurrent": {
                     "description": "Leakage current in Amperes",
                     "type": [
@@ -319,9 +340,7 @@
                     ]
                 }
             },
-            "required": [
-                "temperature"
-            ]
+            "required": []
         },
         "mechanical": {
             "description": "Mechanical dimensions and shape information",
@@ -338,7 +357,6 @@
                 }
             },
             "required": [
-                "dimensions",
                 "shape"
             ]
         },
@@ -382,6 +400,17 @@
                 },
                 "height": {
                     "description": "Height dimension in meters",
+                    "oneOf": [
+                        {
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
+                        },
+                        {
+                            "type": "null"
+                        }
+                    ]
+                },
+                "thickness": {
+                    "description": "Thickness / T dimension in meters. Chip-style (MLCC) datasheets specify the body as L × W × T, where T is the dimension perpendicular to the mounting plane; unlike the EIA case code (which fixes only L × W), T varies per part with layer count. Kept separate from height to stay faithful to datasheet nomenclature.",
                     "oneOf": [
                         {
                             "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"

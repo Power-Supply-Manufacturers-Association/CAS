@@ -38,18 +38,19 @@ The capacitor object has a single required property:
 
 ### datasheetInfo
 
-Contains all eight sections of the capacitor description. **All sections are required.**
+Contains the sections of the capacitor description. **Required sections: `part`, `electrical`, `mechanical`.**
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `part` | object | Yes | Basic part identification |
 | `electrical` | object | Yes | Electrical characteristics |
-| `thermal` | object | Yes | Thermal characteristics |
+| `thermal` | object | No | Thermal characteristics |
 | `mechanical` | object | Yes | Mechanical dimensions and shape information |
-| `business` | object | Yes | Commercial and business information |
-| `lifetime` | object | Yes | Lifetime parameters |
-| `modelParams` | object | Yes | Model parameters for circuit simulation |
-| `factors` | object | Yes | Derating factors for frequency and temperature |
+| `business` | object | No | Commercial and business information |
+| `lifetime` | object | No | Lifetime parameters |
+| `modelParams` | object | No | Model parameters for circuit simulation |
+| `factors` | object | No | Derating factors for frequency and temperature |
+| `application` | string (nullable) | No | Manufacturer's recommended application / quality-grade categories, comma-joined as printed in the catalogue (e.g. Taiyo Yuden's grade taxonomy: "Auto. (Powertrain/Safety)", "Auto. (Body/Info) & High Reliability", "Telecom-Infrastructure & Industrial", "Medical (International Class. Ⅲ）", "Medical (International Class. I ・ II)", "General Equipment", "Mobile Devices"). Free-form — taxonomies are manufacturer-specific. |
 
 ---
 
@@ -79,6 +80,8 @@ Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** 
 | `ratedVoltage` | number | No | Volts | Maximum continuous DC voltage rating |
 | `dissipationFactor` | number | No | % | Dissipation factor (tan delta) |
 | `dissipationFactorFrequency` | number | No | Hz | Frequency at which dissipation factor is measured |
+| `qFactor` | number | Yes | -- | Quality factor (Q = 1/tan delta). For class-1 (C0G/NP0) MLCCs this is the specified minimum Q at the standard EIA-198 / IEC 60384 condition (Q >= 1000 for C >= 30 pF, Q >= 400 + 20*C[pF] below 30 pF, measured at 1 MHz, 1 Vrms). |
+| `qFactorFrequency` | number | Yes | Hz | Frequency at which `qFactor` is specified. Null/absent when the datasheet states only the standard-condition minimum without an explicit frequency. |
 | `leakageCurrent` | number | No | Amperes | DC leakage current |
 | `insulationResistance` | number | No | Ohms | Insulation resistance between terminals |
 | `esr` | number | Yes | Ohms | Equivalent series resistance (ESR) |
@@ -97,7 +100,7 @@ Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** 
 
 ## thermal
 
-Thermal characteristics. **All fields are required.**
+Thermal characteristics. **All fields are optional** — some catalogue sources do not publish an operating-temperature range, so `temperature` may legitimately be absent at fetch time (same rationale as the `esr`/`rippleCurrent` relaxation in `electrical`). When present, it must be a valid `dimensionWithTolerance` — an empty object is not allowed.
 
 | Field | Type | Nullable | Unit | Description |
 |---|---|---|---|---|
@@ -113,7 +116,7 @@ Thermal characteristics. **All fields are required.**
 
 ## mechanical
 
-Mechanical dimensions and shape information. Contains two required sub-objects.
+Mechanical dimensions and shape information. **Required: `shape`.** `dimensions` is optional — some catalogue sources publish only the case/shape code without explicit measurements (e.g. Murata RDE/RCE radial-lead series), so it may legitimately be absent at fetch time.
 
 ### dimensions
 
@@ -125,6 +128,7 @@ Physical dimensions of the component. **All fields are required.** Use `null` fo
 | `width` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | meters | Width / A dimension (rectangular form factors) |
 | `length` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | meters | Length / B dimension (rectangular form factors) |
 | `height` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | meters | Height dimension |
+| `thickness` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | meters | Thickness / T dimension. Chip-style (MLCC) datasheets specify the body as L x W x T, where T is the dimension perpendicular to the mounting plane; unlike the EIA case code (which fixes only L x W), T varies per part with layer count. Kept separate from `height` to stay faithful to datasheet nomenclature. |
 | `pitch` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | meters | Pin pitch spacing (through-hole form factors) |
 | `pinDiameter` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | meters | Pin/lead diameter (through-hole form factors) |
 | `pinLength` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | meters | Pin/lead length (through-hole form factors) |
