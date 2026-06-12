@@ -295,9 +295,7 @@
             },
             "required": [
                 "capacitance",
-                "ratedVoltage",
-                "esr",
-                "rippleCurrent"
+                "ratedVoltage"
             ]
         },
         "thermal": {

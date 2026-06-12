@@ -69,7 +69,7 @@ Basic part identification. **All fields are required.**
 
 ## electrical
 
-Electrical characteristics. **All fields are required.**
+Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** All other fields are optional — `esr` and `rippleCurrent` are rarely published for ceramic/film parts and are enriched from the datasheet by the component-librarian when needed.
 
 | Field | Type | Nullable | Unit | Description |
 |---|---|---|---|---|
