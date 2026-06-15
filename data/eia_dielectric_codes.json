@@ -1,0 +1,26 @@
+{
+  "_comment": "Canonical EIA/MIL ceramic dielectric code -> CAS ceramic technology class. Single source of truth for downstream chemistry-family logic (e.g. cross-reference ranking) so consumers stop hardcoding the code list. The chemistry-family enum itself is CAS/schemas/capacitor.json#/properties/technology; the per-part code goes in its dielectricCode field. Class boundaries follow the EIA RS-198 second/third characters: low-temp X/Y/Z, high-temp 4..8, capacitance-tolerance R(±15%)/S(±22%)/T(+22/-33%)/U(+22/-56%)/V(+22/-82%). Class-1 = temperature-stable (C0G/NP0/U2J); class-2 = high-K stable-ish (R/S/T tolerances); class-3 = high-K unstable (U/V tolerances, e.g. Z5U/Y5V variants).",
+  "codeToTechnology": {
+    "C0G": "ceramic-class-1",
+    "NP0": "ceramic-class-1",
+    "U2J": "ceramic-class-1",
+    "X5R": "ceramic-class-2",
+    "X5S": "ceramic-class-2",
+    "X5T": "ceramic-class-2",
+    "X6R": "ceramic-class-2",
+    "X6S": "ceramic-class-2",
+    "X6T": "ceramic-class-2",
+    "X7R": "ceramic-class-2",
+    "X7S": "ceramic-class-2",
+    "X7T": "ceramic-class-2",
+    "X8R": "ceramic-class-2",
+    "X8S": "ceramic-class-2",
+    "X8L": "ceramic-class-2",
+    "X8G": "ceramic-class-2",
+    "X8M": "ceramic-class-2",
+    "Y5V": "ceramic-class-2",
+    "Z5U": "ceramic-class-3",
+    "Y5U": "ceramic-class-3",
+    "Z5V": "ceramic-class-3"
+  }
+}
