@@ -76,7 +76,8 @@
             "required": [
                 "capacitance",
                 "ratedVoltage"
-            ]
+            ],
+            "additionalProperties": false
         }
     ],
     "$defs": {}

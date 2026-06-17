@@ -25,5 +25,9 @@
             }
         }
     },
-    "required": ["inputs", "capacitor", "outputs"]
+    "required": [
+        "inputs",
+        "capacitor",
+        "outputs"
+    ]
 }
