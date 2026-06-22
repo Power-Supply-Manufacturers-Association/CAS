@@ -77,6 +77,7 @@ Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** 
 | `capacitance` | [dimensionWithTolerance](#dimensionwithtolerance) | No | Farads | Capacitance value with tolerance bounds |
 | `capacitanceDriftLongTermPercent` | number | No | % | End-of-life capacitance change (negative = decrease) |
 | `capacitanceMinimumLongTerm` | number | No | Farads | Worst-case minimum capacitance after end-of-life, accounting for initial tolerance |
+| `capacitanceBiasPoints` | array | No | — | DC-bias derating curve: points `{voltage (V), capacitance (F), temperature (°C), acVoltage (V)}` (`voltage`+`capacitance` required) |
 | `ratedVoltage` | number | No | Volts | Maximum continuous DC voltage rating |
 | `dissipationFactor` | number | No | % | Dissipation factor (tan delta) |
 | `dissipationFactorFrequency` | number | No | Hz | Frequency at which dissipation factor is measured |

@@ -31,10 +31,14 @@
             "required": [
                 "capacitor"
             ]
+        },
+        {
+            "maxProperties": 0
         }
     ],
     "$defs": {
         "manufacturerInfo": {
+            "title": "capacitorManufacturerInfo",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -72,6 +76,7 @@
             ]
         },
         "datasheetInfo": {
+            "title": "capacitorDatasheetInfo",
             "description": "Information extracted from the component datasheet and PMs Excel data",
             "type": "object",
             "additionalProperties": false,
@@ -119,6 +124,7 @@
             ]
         },
         "part": {
+            "title": "capacitorPart",
             "description": "Basic part identification",
             "allOf": [
                 {
@@ -171,6 +177,7 @@
             ]
         },
         "electrical": {
+            "title": "capacitorElectrical",
             "description": "Electrical characteristics",
             "type": "object",
             "additionalProperties": false,
@@ -192,6 +199,37 @@
                         "number",
                         "null"
                     ]
+                },
+                "capacitanceBiasPoints": {
+                    "description": "Capacitance vs. DC-bias-voltage points (DC-bias derating curve, dominant for class-2 ceramics), each measured at a temperature and AC measurement voltage. voltage = DC bias in V, capacitance = effective capacitance in F at that bias.",
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "additionalProperties": false,
+                        "properties": {
+                            "voltage": {
+                                "description": "DC bias voltage in Volts.",
+                                "type": "number"
+                            },
+                            "capacitance": {
+                                "description": "Effective capacitance at this DC bias in Farads.",
+                                "type": "number",
+                                "minimum": 0
+                            },
+                            "temperature": {
+                                "description": "Measurement temperature in degrees Celsius.",
+                                "type": "number"
+                            },
+                            "acVoltage": {
+                                "description": "AC measurement (signal) voltage in Volts.",
+                                "type": "number"
+                            }
+                        },
+                        "required": [
+                            "voltage",
+                            "capacitance"
+                        ]
+                    }
                 },
                 "ratedVoltage": {
                     "description": "Rated voltage in Volts",
@@ -326,6 +364,7 @@
             ]
         },
         "thermal": {
+            "title": "capacitorThermal",
             "description": "Thermal characteristics — extends PEAS datasheetInfoThermal with capacitance-temperature coefficient.",
             "allOf": [
                 {
@@ -353,6 +392,7 @@
             ]
         },
         "mechanical": {
+            "title": "capacitorMechanical",
             "description": "Mechanical dimensions and shape information",
             "type": "object",
             "additionalProperties": false,
@@ -371,6 +411,7 @@
             ]
         },
         "dimensions": {
+            "title": "capacitorDimensions",
             "description": "Physical dimensions of the component",
             "type": "object",
             "additionalProperties": false,
@@ -467,6 +508,7 @@
             "required": []
         },
         "shape": {
+            "title": "capacitorShape",
             "description": "Component shape and assembly information",
             "type": "object",
             "additionalProperties": false,
@@ -514,6 +556,7 @@
             ]
         },
         "lifetime": {
+            "title": "capacitorLifetime",
             "description": "Reliability and lifetime parameters — extends PEAS datasheetInfoLifetime with capacitor-specific end-of-life definitions.",
             "allOf": [
                 {
@@ -571,6 +614,7 @@
             ]
         },
         "modelParams": {
+            "title": "capacitorModelParams",
             "description": "Circuit model parameters for SPICE simulation",
             "type": "object",
             "additionalProperties": false,
@@ -607,6 +651,7 @@
             "required": []
         },
         "factors": {
+            "title": "capacitorFactors",
             "description": "Derating factors as functions of frequency and temperature",
             "type": "object",
             "additionalProperties": false,
