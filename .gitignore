@@ -1,0 +1,9 @@
+# CMake build trees (configured + fetched deps + generated headers + binaries)
+build/
+build-wasm/
+cmake-build-*/
+*.o
+*.a
+*.so
+__pycache__/
+.DS_Store
