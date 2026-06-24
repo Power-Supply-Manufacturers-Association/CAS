@@ -115,6 +115,10 @@
                         "string",
                         "null"
                     ]
+                },
+                "provenance": {
+                    "description": "Data-provenance trail (see provenance).",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/provenance"
                 }
             },
             "required": [
