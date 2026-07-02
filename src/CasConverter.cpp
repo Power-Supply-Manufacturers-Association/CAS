@@ -63,7 +63,7 @@ json make_capacitor_atom(double c) {
 
     json datasheet;
     datasheet["part"]["partNumber"] = "ideal";
-    datasheet["part"]["technology"] = "film-pp";
+    datasheet["part"]["technology"] = "film-polypropylene";
     datasheet["electrical"] = electrical;
     datasheet["mechanical"]["shape"]["assembly"] = "SMT";
     datasheet["mechanical"]["shape"]["shapeType"] = "chip";
@@ -77,11 +77,21 @@ json make_capacitor_atom(double c) {
 // A parasitic resistor atom (the CIAS converter reads resistor...electrical.resistance to emit an R
 // card). Used for a real capacitor's series ESR.
 json make_resistor_atom(double r) {
+    // Mirrors RAS/src/RasConverter.cpp's make_resistor_atom: the atom must satisfy the
+    // ras resistor.json contract (part.technology, electrical.tolerance/powerRating required).
+    json electrical;
+    electrical["resistance"]["nominal"] = r;
+    electrical["tolerance"] = 0.0;
+    electrical["powerRating"] = 0.0;
+
+    json datasheet;
+    datasheet["part"]["partNumber"] = "esr";
+    datasheet["part"]["technology"] = "thickFilm";
+    datasheet["electrical"] = electrical;
+
     json atom;
-    auto& mfg = atom["resistor"]["manufacturerInfo"];
-    mfg["name"] = "parasitic";
-    mfg["datasheetInfo"]["part"]["partNumber"] = "esr";
-    mfg["datasheetInfo"]["electrical"]["resistance"]["nominal"] = r;
+    atom["resistor"]["manufacturerInfo"]["name"] = "parasitic";
+    atom["resistor"]["manufacturerInfo"]["datasheetInfo"] = datasheet;
     return atom;
 }
 

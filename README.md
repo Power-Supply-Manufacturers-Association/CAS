@@ -38,10 +38,10 @@ PEAS (Power Electronics Agnostic Structure)
  |-- MAS  (Magnetic Agnostic Structure)      -- inductors, transformers, chokes
  |-- CAS  (Capacitor Agnostic Structure)     -- capacitors (this schema)
  |-- SAS  (Semiconductor Agnostic Structure) -- MOSFETs, diodes, IGBTs
- |-- RAS  (Resistor Agnostic Structure)      -- resistors
+ |-- RAS  (Resistor Agnostic Structure)      -- resistors, varistors
 ```
 
-A CAS document wraps a `capacitor` object with `inputs` (operating conditions) and `outputs` (computed results such as ESR losses, thermal rise, and remaining lifetime), forming a complete PEAS document.
+A CAS document wraps a `capacitor` object with `inputs` (design requirements + operating points) and `outputs` (an array of per-operating-point results such as ESR losses, thermal rise, and remaining lifetime), forming a complete PEAS document.
 
 ### CAS/data/ vs TAS/data/
 
@@ -51,16 +51,15 @@ A CAS document wraps a `capacitor` object with `inputs` (operating conditions) a
 
 ## Supported Technologies
 
-CAS supports all major capacitor technologies used in power electronics:
+The `technology` field is a closed 20-value enum (`schemas/capacitor.json#/$defs/technology`). The EIA/MIL dielectric code (X7R, C0G, ...) lives in the separate `dielectricCode` field. The requirements-side `allowedTechnologies` references the **same** enum, so the two vocabularies cannot drift apart.
 
-| Technology | `technology` enum value | Typical Applications |
+| Family | `technology` enum values | Typical Applications |
 |---|---|---|
-| **MLCC Class I** | `"MLCC Class I"` | C0G/NP0 -- precision timing, filtering, resonant circuits. Stable capacitance vs. voltage and temperature. |
-| **MLCC Class II** | `"MLCC Class II"` | X5R/X7R/X7S -- bulk decoupling, DC link, output filtering. Subject to DC bias derating. |
-| **Aluminum Electrolytic** | `"Alum. Electrolytic"` | DC bus, bulk energy storage, hold-up time. High CV product, limited ripple current and lifetime. |
-| **Aluminum Polymer** | `"Alum. Polymer"` | Low-ESR output filtering, POL converters. Long lifetime, higher cost. |
-| **Hybrid Polymer** | `"Hybrid Polymer"` | Combines electrolytic and polymer advantages. Moderate ESR with extended lifetime. |
-| **Film Capacitor** | `"Film Capacitor"` | Snubbers, resonant circuits, DC link in inverters. Self-healing, high ripple current capability. |
+| **Ceramic** | `ceramic-class-1`, `ceramic-class-2`, `ceramic-class-3` | Class 1 (C0G/NP0): precision timing, filtering, resonant circuits. Class 2 (X5R/X7R): bulk decoupling, DC link, output filtering -- subject to DC bias derating. Class 3 (Y5U etc.): general purpose. |
+| **Aluminum** | `aluminum-electrolytic-wet`, `aluminum-electrolytic-polymer`, `aluminum-hybrid-polymer` | DC bus, bulk energy storage, hold-up; polymer variants for low-ESR output filtering and POL converters. |
+| **Tantalum / Niobium** | `tantalum-wet`, `tantalum-mno2`, `tantalum-polymer`, `niobium-oxide` | Stable bulk capacitance, low-profile decoupling. |
+| **Film** | `film-polypropylene`, `film-polyester`, `film-polyphenylene-sulfide`, `film-paper`, `film-acrylic` | Snubbers, resonant circuits, DC link in inverters, EMI suppression. Self-healing, high ripple current capability. `film-acrylic` is the PML vapour-deposited acrylate construction (e.g. Rubycon PMLCAP). |
+| **Other** | `mica`, `thin-film-silicon`, `supercapacitor-edlc`, `supercapacitor-hybrid`, `vacuum` | RF precision (mica, thin-film silicon), energy buffering (supercaps), high-power RF (vacuum). |
 
 ---
 
@@ -70,35 +69,36 @@ Every CAS document follows the three-section PEAS pattern:
 
 ```
 +------------------+     +------------------+     +------------------+
-|     INPUTS       |     |    CAPACITOR     |     |    OUTPUTS       |
+|     INPUTS       |     |    CAPACITOR     |     |    OUTPUTS[]     |
 +------------------+     +------------------+     +------------------+
 | What you NEED    |  +  | What you SELECT  |  =  | What you GET     |
-|                  |     |                  |     |                  |
-| - Voltage/Current|     | - part           |     | - ESR losses     |
-| - Frequency      |     | - electrical     |     | - Temperature    |
-| - Temperature    |     | - thermal        |     | - Lifetime       |
-| - Lifetime req.  |     | - mechanical     |     | - Impedance      |
-|                  |     | - business       |     |                  |
-|                  |     | - lifetime       |     |                  |
-|                  |     | - modelParams    |     |                  |
-|                  |     | - factors        |     |                  |
+|                  |     |                  |     | (per op. point)  |
+| designRequirements     | - part           |     | - esrLosses      |
+|  (capacitance,   |     | - electrical     |     | - temperature    |
+|   voltage, role) |     | - thermal        |     | - effectiveCap.  |
+| operatingPoints[]|     | - mechanical     |     | - impedance      |
+|  (V/I waveforms, |     | - lifetime       |     | - rippleVoltage  |
+|   frequency,     |     | - modelParams    |     | - lifetime       |
+|   temperature)   |     | - factors        |     | - reliability    |
+|                  |     |                  |     | - insulation     |
 +------------------+     +------------------+     +------------------+
 ```
 
-The `capacitor` object is organized into eight sections:
+`inputs` is structured: `operatingPoints[]` (PEAS `twoTerminalOperatingPoint`) plus `designRequirements` (capacitance required; optional rated voltage, max ESR, minimum ripple current / lifetime, role, allowed technologies). `outputs` is an **array** of per-operating-point result bundles, each block sealed and carrying `{origin, methodUsed}` provenance.
 
-| Section | Purpose |
-|---|---|
-| **part** | Part identification: part number, series, technology, case code |
-| **electrical** | Capacitance (with tolerance), rated voltage, ESR, dissipation factor, leakage current, ripple current limits, thermal resistance, MLCC DC bias parameters |
-| **thermal** | Operating temperature range (with tolerance), temperature coefficient of capacitance (TCC) |
-| **mechanical** | Physical dimensions (diameter, width, length, height, pin pitch, pin diameter, pin length), shape type, assembly type, volume, footprint |
-| **business** | Packaging, MOQ, lead time, stock, pricing, distribution channel |
-| **lifetime** | Endurance hours, Arrhenius model parameters, end-of-life definitions, useful life |
-| **modelParams** | SPICE circuit model: Rs, Cs, Ls, Riso |
-| **factors** | Ripple current derating curves vs. frequency and temperature |
+The `capacitor.manufacturerInfo.datasheetInfo` object is organized into these sections:
 
-All eight sections are **required**.
+| Section | Required | Purpose |
+|---|---|---|
+| **part** | Yes | Part identification: part number, series, technology, dielectric code, case code |
+| **electrical** | Yes | Capacitance (with tolerance), rated voltage, ESR (scalar + curve), dissipation factor (fraction, scalar + curve), Q factor, leakage current, ripple current limits, DC-bias derating points, thermal resistance |
+| **thermal** | No | Operating temperature range, temperature coefficient of capacitance (TCC) |
+| **mechanical** | Yes | Physical dimensions (diameter, width, length, height, thickness, pin pitch/diameter/length), shape type, assembly type, volume, footprint |
+| **lifetime** | No | Endurance hours, lifetime-model parameters, end-of-life definitions, useful life |
+| **modelParams** | No | SPICE circuit model: Rs, Cs, Ls, Riso |
+| **factors** | No | Ripple current derating curves vs. frequency and temperature |
+
+Only **part**, **electrical**, and **mechanical** are required. There is no `business` section -- commercial data (packaging, MOQ, lead time, stock, pricing) lives in the sibling `distributorsInfo` array (PEAS `distributorInfo`). A `capacitor` may also be a completely empty object `{}`: a pre-sourcing seed whose requirements live in `inputs.designRequirements`.
 
 ---
 
@@ -106,14 +106,14 @@ All eight sections are **required**.
 
 ### Lifetime Modeling
 
-CAS includes a complete Arrhenius-based lifetime model for electrolytic and polymer capacitors. The model parameters are:
+CAS includes a complete lifetime model for electrolytic and polymer capacitors (all fields optional/nullable -- MLCCs have no wear-out mechanism). The model parameters are:
 
 | Parameter | Field | Description |
 |---|---|---|
 | Endurance hours | `lifetimeEndurance` | Rated lifetime at maximum temperature and rated ripple (hours) |
 | Maximum lifetime | `maxLifetime` | Absolute maximum lifetime cap (years) |
-| A exponent | `aexp` | Temperature acceleration exponent |
-| B exponent | `bexp` | Voltage acceleration exponent |
+| A exponent | `aexp` | Voltage stress exponent |
+| B exponent | `bexp` | Temperature stress coefficient (Arrhenius) |
 | Delta T0 | `deltaT0` | Reference temperature delta for the Arrhenius equation (degrees C) |
 | K factor | `kfactor` | Technology-specific lifetime multiplier |
 | Vx factor | `vxfactor` | Voltage stress factor |
@@ -140,8 +140,8 @@ Capacitor ripple current capability varies with frequency and temperature. CAS p
 
 **In the `electrical` section** -- point-form curves attached directly to the part:
 
-- `rippleCurrentFrequencyPoints` -- X-Y curve of ripple current vs. frequency
-- `rippleCurrentTemperaturePoints` -- X-Y curve of ripple current vs. temperature
+- `rippleCurrentFrequencyPoints` -- X-Y curve of ripple current derating vs. frequency
+- `rippleCurrentTemperaturePoints` -- X-Y curve of ripple current derating vs. temperature
 
 **In the `factors` section** -- normalized derating multipliers:
 
@@ -152,19 +152,23 @@ The `electrical` section also records the reference conditions:
 - `rippleCurrentFrequency` -- frequency at which rated ripple current is specified (Hz)
 - `rippleCurrentTemperature` -- temperature at which rated ripple current is specified (degrees C)
 
+### Frequency-Dependent ESR and DF
+
+Scalar `esr`/`dissipationFactor` values (with their measurement frequencies) are kept for legacy datasheet points, but selection logic should prefer the curve fields when present:
+
+- `esrPoints` -- ESR vs. frequency (at mains frequencies ESR can be 10-100x its 100 kHz value for class-2 ceramic and polymer chemistries)
+- `dissipationFactorPoints` -- tan delta vs. frequency, as a **fraction** (0.025 = 2.5%)
+
 ### SPICE Model
 
 The `modelParams` section provides a four-element circuit model suitable for SPICE simulation:
 
 ```
-        Rs          Ls
-  o----/\/\/----UUUU----o
-  |                     |
-  |        Cs           |
-  o-------||------------o
-  |                     |
-  |       Riso          |
-  o----/\/\/------------o
+        Rs          Ls          Cs
+  o----/\/\/----UUUU--------||------o
+  |                                 |
+  |              Riso               |
+  o--------------/\/\/--------------o
 ```
 
 | Parameter | Field | Unit | Description |
@@ -174,14 +178,14 @@ The `modelParams` section provides a four-element circuit model suitable for SPI
 | Series inductance | `ls` | Henries | ESL (equivalent series inductance) |
 | Insulation resistance | `riso` | Ohms | Parallel leakage path (very high value) |
 
-This is a series RLC model (Rs + Cs + Ls in series between the terminals) with a parallel insulation resistance (Riso) across the terminals. It captures impedance behavior from DC through the self-resonant frequency and beyond.
+This is a series RLC model (Rs + Ls + Cs in series between the terminals) with a parallel insulation resistance (Riso) across the terminals. It captures impedance behavior from DC through the self-resonant frequency and beyond.
 
 ```mermaid
 flowchart LR
     A["Terminal A"] --> Rs["Rs<br/>ESR"]
-    Rs --> Cs["Cs<br/>Capacitance"]
-    Cs --> Ls["Ls<br/>ESL"]
-    Ls --> B["Terminal B"]
+    Rs --> Ls["Ls<br/>ESL"]
+    Ls --> Cs["Cs<br/>Capacitance"]
+    Cs --> B["Terminal B"]
     A --- Riso["Riso<br/>Insulation<br/>Resistance"]
     Riso --- B
 ```
@@ -195,7 +199,7 @@ flowchart TD
     Volt["Applied<br/>Voltage"]
     Ripple["Ripple Current<br/>Self-Heating"]
 
-    Rated --> Arrhenius["Arrhenius Model<br/>L = L0 * 2^((T_max - T_op) / deltaT0)<br/>* (V_rated / V_applied)^bexp"]
+    Rated --> Arrhenius["Arrhenius Model<br/>L = L0 * 2^((T_max - T_op) / deltaT0)<br/>* (V_rated / V_applied)^aexp"]
     Temp --> Arrhenius
     Volt --> Arrhenius
     Ripple --> DeltaT["Temperature Rise<br/>dT = I_rms^2 * ESR * Rth"]
@@ -215,25 +219,25 @@ flowchart TD
     Freq -->|"< 100 kHz"| LF["Low Frequency"]
 
     HF --> HFRole{"Role?"}
-    HFRole -->|"Decoupling/<br/>Output Filter"| MLCC["MLCC Class II<br/>(X5R/X7R)<br/>Low ESR, small size"]
-    HFRole -->|"Resonant/<br/>Precision"| C0G["MLCC Class I<br/>(C0G/NP0)<br/>Stable, no DC bias effect"]
-    HFRole -->|"Snubber"| Film["Film Capacitor<br/>Self-healing, high dV/dt"]
+    HFRole -->|"Decoupling/<br/>Output Filter"| MLCC["ceramic-class-2<br/>(X5R/X7R)<br/>Low ESR, small size"]
+    HFRole -->|"Resonant/<br/>Precision"| C0G["ceramic-class-1<br/>(C0G/NP0)<br/>Stable, no DC bias effect"]
+    HFRole -->|"Snubber"| Film["film-polypropylene<br/>Self-healing, high dV/dt"]
 
     LF --> LFRole{"Role?"}
-    LFRole -->|"DC Bus /<br/>Bulk Storage"| Elec["Aluminum Electrolytic<br/>High CV product, low cost"]
-    LFRole -->|"Low-ESR<br/>Output"| Poly["Aluminum Polymer<br/>Long lifetime, moderate ESR"]
-    LFRole -->|"DC Link /<br/>Inverter"| FilmLF["Film Capacitor<br/>High ripple current, self-healing"]
+    LFRole -->|"DC Bus /<br/>Bulk Storage"| Elec["aluminum-electrolytic-wet<br/>High CV product, low cost"]
+    LFRole -->|"Low-ESR<br/>Output"| Poly["aluminum-electrolytic-polymer<br/>Long lifetime, moderate ESR"]
+    LFRole -->|"DC Link /<br/>Inverter"| FilmLF["film-polypropylene<br/>High ripple current, self-healing"]
 ```
 
 ---
 
 ## Utility Types
 
-CAS uses shared utility types defined in `schemas/utils.json`:
+CAS uses the shared utility types defined in `PEAS/schemas/utils.json` (referenced by absolute `$id`; `CAS/schemas/utils.json` is just a redirect shim):
 
 ### dimensionWithTolerance
 
-Represents a physical quantity with tolerance bounds. At least one of the three fields must be present:
+Represents a physical quantity with tolerance bounds. At least one of `minimum`/`nominal`/`maximum` must be present (plus optional `excludeMinimum`, `excludeMaximum`, `unit`):
 
 ```json
 {
@@ -247,7 +251,7 @@ Used for: capacitance, temperature range, TCC, all mechanical dimensions, volume
 
 ### curve
 
-X-Y data points for characteristic curves:
+X-Y data points for characteristic curves (optional `xLabel`, `yLabel`, `conditions`):
 
 ```json
 {
@@ -256,7 +260,7 @@ X-Y data points for characteristic curves:
 }
 ```
 
-Used for: ripple current derating curves (frequency and temperature).
+Used for: ripple current derating curves, `esrPoints`, `dissipationFactorPoints`.
 
 ### numberArray
 
@@ -266,197 +270,184 @@ A simple array of numbers, used for the factor curves in the `factors` section.
 
 ## Examples
 
-### Aluminum Electrolytic Capacitor
+Both examples below are trimmed versions of the full documents in `examples/`, which validate against `schemas/CAS.json` (and as PEAS documents).
+
+### MLCC Class 2 (X7R) -- `examples/01_mlcc_grm32_1uF.json`
 
 ```json
 {
-  "inputs": {},
-  "capacitor": {
-    "manufacturerInfo": {
-      "datasheetInfo": {
-        "part": {
-          "partNumber": "860010672009",
-          "series": "WCAP-ASLI",
-          "technology": "Alum. Electrolytic",
-          "description": "22uF 50V 105C Radial",
-          "case": "6.3x5.5"
-        },
-        "electrical": {
-          "capacitance": {"nominal": 22e-6},
-          "capacitanceDriftLongTermPercent": -20,
-          "capacitanceMinimumLongTerm": 17.6e-6,
-          "ratedVoltage": 50,
-          "dissipationFactor": 16,
-          "dissipationFactorFrequency": 120,
-          "leakageCurrent": 5.5e-6,
-          "insulationResistance": 4e8,
-          "esr": 2.7,
-          "esrFrequency": 100000,
-          "rippleCurrent": 0.12,
-          "rippleCurrentFrequency": 100000,
-          "rippleCurrentTemperature": 105,
-          "rippleCurrentFrequencyPoints": {"xData": [], "yData": []},
-          "rippleCurrentTemperaturePoints": {"xData": [], "yData": []},
-          "thermalResistance": null
-        },
-        "thermal": {
-          "temperature": {"minimum": -40, "nominal": 25, "maximum": 105},
-          "tcc": null
-        },
-        "mechanical": {
-          "dimensions": {
-            "diameter": {"nominal": 0.0063},
-            "width": null,
-            "length": null,
-            "height": {"nominal": 0.0055},
-            "pitch": {"nominal": 0.0025},
-            "pinDiameter": {"nominal": 0.0005},
-            "pinLength": null
-          },
-          "shape": {
-            "assembly": "THT",
-            "shapeType": "Radial Cylindrical",
-            "volume": null,
-            "footprint": null
-          }
-        },
-        "business": {
-          "packaging": "Bulk",
-          "pu": 500,
-          "moq": 500,
-          "leadTime": null,
-          "stock": null,
-          "distribution": null,
-          "priceCost": 0.05
-        },
-        "lifetime": {
-          "lifetimeEndurance": 2000,
-          "maxLifetime": 15,
-          "aexp": 2,
-          "bexp": 1,
-          "deltaT0": 10,
-          "kfactor": 1,
-          "vxfactor": 1,
-          "endDefinitionC": -20,
-          "endDefinitionEsr": 200,
-          "usefulLife": null,
-          "eoUsefulLifeC": null,
-          "eoUsefulLifeR": null,
-          "usefulLifeComment": null
-        },
-        "modelParams": {
-          "rs": 2.7,
-          "cs": 22e-6,
-          "ls": 10e-9,
-          "riso": 4e8
-        },
-        "factors": {
-          "rippleCurrentFrequencyFactorFrequency": [120, 1000, 10000, 100000],
-          "rippleCurrentFrequencyFactorAmplitude": [0.5, 0.65, 0.85, 1.0],
-          "rippleCurrentTemperatureFactorTemperature": [60, 85, 105],
-          "rippleCurrentTemperatureFactorAmplitude": [1.5, 1.0, 0.0]
+  "inputs": {
+    "designRequirements": {
+      "name": "output filter MLCC",
+      "capacitance": {"nominal": 1e-06},
+      "ratedVoltage": 100.0,
+      "role": "outputFilter",
+      "allowedTechnologies": ["ceramic-class-2"],
+      "market": "industrial"
+    },
+    "operatingPoints": [
+      {
+        "name": "500kHz ripple, 25C",
+        "conditions": {"ambientTemperature": 25.0},
+        "excitation": {
+          "frequency": 500000.0,
+          "voltage": {"processed": {"label": "sinusoidal", "offset": 0.0, "rms": 2.0, "peak": 2.83}},
+          "current": {"processed": {"label": "sinusoidal", "offset": 0.0, "rms": 0.5, "peak": 0.71}}
         }
       }
-    }
+    ]
   },
-  "outputs": {}
-}
-```
-
-### MLCC Class II (X7R)
-
-```json
-{
-  "inputs": {},
   "capacitor": {
     "manufacturerInfo": {
+      "name": "Murata",
+      "datasheetUrl": "https://www.murata.com/products/productdata/GRM.pdf",
       "datasheetInfo": {
         "part": {
-          "partNumber": "885012207098",
-          "series": "WCAP-CSGP",
-          "technology": "MLCC Class II",
-          "description": "10uF 25V X7R 1210",
+          "partNumber": "GRM32ER72A105KA35L",
+          "series": "GRM",
+          "technology": "ceramic-class-2",
           "case": "1210"
         },
         "electrical": {
-          "capacitance": {"minimum": 8e-6, "nominal": 10e-6, "maximum": 12e-6},
-          "capacitanceDriftLongTermPercent": -5,
-          "capacitanceMinimumLongTerm": 7.6e-6,
-          "ratedVoltage": 25,
-          "dissipationFactor": 10,
+          "capacitance": {"nominal": 1e-06, "minimum": 9e-07, "maximum": 1.1e-06},
+          "ratedVoltage": 100,
+          "dissipationFactor": 0.025,
           "dissipationFactorFrequency": 1000,
-          "leakageCurrent": 2.5e-7,
-          "insulationResistance": 1e10,
-          "esr": 0.005,
+          "esr": 0.05,
           "esrFrequency": 1000000,
-          "rippleCurrent": 3.0,
-          "rippleCurrentFrequency": 100000,
+          "rippleCurrent": 0.5,
+          "rippleCurrentFrequency": 1000000,
           "rippleCurrentTemperature": 25,
-          "rippleCurrentFrequencyPoints": {"xData": [], "yData": []},
-          "rippleCurrentTemperaturePoints": {"xData": [], "yData": []},
           "thermalResistance": 50
         },
         "thermal": {
           "temperature": {"minimum": -55, "nominal": 25, "maximum": 125},
-          "tcc": {"minimum": -15, "maximum": 15}
+          "tcc": {"minimum": -15, "nominal": 0, "maximum": 15}
         },
         "mechanical": {
           "dimensions": {
-            "diameter": null,
-            "width": {"nominal": 0.0032},
-            "length": {"nominal": 0.0025},
-            "height": {"nominal": 0.0025},
-            "pitch": null,
-            "pinDiameter": null,
-            "pinLength": null
+            "width": {"nominal": 0.0025},
+            "length": {"nominal": 0.0032},
+            "height": {"nominal": 0.0025}
           },
-          "shape": {
-            "assembly": "SMT",
-            "shapeType": "SMD Chip",
-            "volume": null,
-            "footprint": null
+          "shape": {"assembly": "SMT", "shapeType": "SMD Chip", "footprint": {"nominal": 8e-06}}
+        },
+        "lifetime": {"usefulLifeComment": "MLCC - no wear-out mechanism"},
+        "modelParams": {"rs": 0.05, "cs": 1e-06, "ls": 1.2e-09, "riso": 1e10},
+        "provenance": [
+          {
+            "source": "manufacturerParametric",
+            "sourceName": "Murata parametric (SimSurfing export)",
+            "retrievedDate": "2026-06-20"
           }
-        },
-        "business": {
-          "packaging": "Tape & Reel",
-          "pu": 4000,
-          "moq": 4000,
-          "leadTime": null,
-          "stock": null,
-          "distribution": null,
-          "priceCost": 0.03
-        },
-        "lifetime": {
-          "lifetimeEndurance": null,
-          "maxLifetime": null,
-          "aexp": null,
-          "bexp": null,
-          "deltaT0": null,
-          "kfactor": null,
-          "vxfactor": null,
-          "endDefinitionC": null,
-          "endDefinitionEsr": null,
-          "usefulLife": null,
-          "eoUsefulLifeC": null,
-          "eoUsefulLifeR": null,
-          "usefulLifeComment": null
-        },
-        "modelParams": {
-          "rs": 0.005,
-          "cs": 10e-6,
-          "ls": 1e-9,
-          "riso": 1e10
-        },
-        "factors": {
-          "rippleCurrentFrequencyFactorFrequency": [],
-          "rippleCurrentFrequencyFactorAmplitude": [],
-          "rippleCurrentTemperatureFactorTemperature": [],
-          "rippleCurrentTemperatureFactorAmplitude": []
+        ]
+      }
+    },
+    "distributorsInfo": [
+      {
+        "name": "Broad",
+        "packaging": "Tape and Reel",
+        "moq": 4000,
+        "vpe": 4000,
+        "leadTime": 12,
+        "cost": {"value": 0.08, "currency": "USD"}
+      }
+    ]
+  },
+  "outputs": []
+}
+```
+
+Note the `dissipationFactor` of `0.025`: a **fraction** (2.5%), not a percentage. Commercial data (packaging, MOQ, cost) sits in `distributorsInfo`, not inside `datasheetInfo`.
+
+### Aluminum Electrolytic -- `examples/02_alu_electrolytic_upw.json`
+
+```json
+{
+  "inputs": {
+    "designRequirements": {
+      "name": "bulk storage electrolytic",
+      "capacitance": {"nominal": 0.001},
+      "ratedVoltage": 50.0,
+      "minimumRippleCurrent": 1.0,
+      "minimumLifetime": 8000.0,
+      "role": "dcLink",
+      "allowedTechnologies": ["aluminum-electrolytic-wet", "aluminum-hybrid-polymer"]
+    },
+    "operatingPoints": [
+      {
+        "name": "100Hz mains ripple, 45C",
+        "conditions": {"ambientTemperature": 45.0},
+        "excitation": {
+          "frequency": 100.0,
+          "voltage": {"processed": {"label": "sinusoidal", "offset": 0.0, "rms": 3.0, "peak": 4.24}},
+          "current": {"processed": {"label": "sinusoidal", "offset": 0.0, "rms": 1.2, "peak": 1.7}}
         }
       }
-    }
+    ]
   },
-  "outputs": {}
+  "capacitor": {
+    "manufacturerInfo": {
+      "name": "Nichicon",
+      "datasheetUrl": "https://www.nichicon.co.jp/english/products/pdfs/UPW1H102MHD.pdf",
+      "datasheetInfo": {
+        "part": {
+          "partNumber": "UPW1H102MHD",
+          "series": "UPW",
+          "technology": "aluminum-electrolytic-wet",
+          "case": "16x25"
+        },
+        "electrical": {
+          "capacitance": {"nominal": 0.001, "minimum": 0.0008, "maximum": 0.0012},
+          "capacitanceDriftLongTermPercent": 20,
+          "ratedVoltage": 50,
+          "dissipationFactor": 0.1,
+          "dissipationFactorFrequency": 120,
+          "leakageCurrent": 0.0015,
+          "esr": 0.034,
+          "esrFrequency": 100000,
+          "rippleCurrent": 2.235,
+          "rippleCurrentFrequency": 100000,
+          "rippleCurrentTemperature": 105
+        },
+        "thermal": {
+          "temperature": {"minimum": -55, "maximum": 105}
+        },
+        "mechanical": {
+          "dimensions": {
+            "diameter": {"nominal": 0.016},
+            "length": {"nominal": 0.025},
+            "pitch": {"nominal": 0.0075},
+            "pinDiameter": {"nominal": 0.0008}
+          },
+          "shape": {"assembly": "THT", "shapeType": "Radial Cylindrical"}
+        },
+        "lifetime": {
+          "lifetimeEndurance": 8000,
+          "aexp": 2.0,
+          "deltaT0": 10.0,
+          "endDefinitionC": 20,
+          "endDefinitionEsr": 200
+        },
+        "factors": {
+          "rippleCurrentFrequencyFactorFrequency": [50, 120, 300, 1000, 10000, 100000],
+          "rippleCurrentFrequencyFactorAmplitude": [0.7, 0.75, 0.8, 0.9, 1.0, 1.0],
+          "rippleCurrentTemperatureFactorTemperature": [60, 85, 95, 105],
+          "rippleCurrentTemperatureFactorAmplitude": [1.6, 1.2, 1.05, 1.0]
+        },
+        "provenance": [
+          {
+            "source": "manufacturerDatasheet",
+            "sourceName": "Nichicon datasheet (nichicon.co.jp)"
+          }
+        ]
+      }
+    },
+    "distributorsInfo": [
+      {"name": "Mouser/DigiKey", "packaging": "Bulk", "moq": 1, "vpe": 200}
+    ]
+  },
+  "outputs": []
 }
 ```
 
@@ -467,21 +458,28 @@ A simple array of numbers, used for the factor curves in the `factors` section.
 ```
 CAS/
   schemas/
-    CAS.json          -- Top-level schema (inputs + capacitor + outputs)
-    capacitor.json    -- Capacitor component schema (all eight sections)
-    utils.json        -- Shared types: dimensionWithTolerance, curve, numberArray
+    CAS.json                        -- Top-level schema (inputs + capacitor + outputs[], all required)
+    capacitor.json                  -- Capacitor component schema (incl. the technology enum)
+    inputs.json                     -- operatingPoints[] + designRequirements
+    inputs/
+      designRequirements.json       -- Capacitor design requirements (capacitance required)
+    outputs.json                    -- Per-operating-point result blocks (sealed, with provenance)
+    utils.json                      -- Redirect shim to PEAS/schemas/utils.json
   data/
-    capacitors.ndjson -- Manufacturing building blocks (foils, dielectrics, etc.)
-  examples/           -- Example CAS documents
+    capacitors.ndjson               -- Manufacturing building blocks (foils, dielectrics, etc.)
+    eia_dielectric_codes.json       -- EIA dielectric-code reference data
+  examples/
+    01_mlcc_grm32_1uF.json          -- Murata MLCC (ceramic-class-2)
+    02_alu_electrolytic_upw.json    -- Nichicon aluminum electrolytic
   docs/
-    schema.md         -- Detailed field-by-field schema reference
+    schema.md                       -- Detailed field-by-field schema reference
 ```
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License -- see the [LICENSE](LICENSE) file.
 
 ---
 

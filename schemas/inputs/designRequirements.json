@@ -1,9 +1,10 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://psma.com/cas/inputs/designRequirements.json",
-    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "$comment": "SPDX-License-Identifier: MIT",
     "title": "designRequirements",
-    "description": "The list of requirements that a given capacitor must comply with. Built on top of the PEAS designRequirementsBase mixin (shared name/market/topology/operatingTemperature/terminalType/maximumWeight/maximumDimensions) plus capacitor-specific fields and a narrowed role/allowedTechnologies enum.",
+    "description": "The list of requirements that a given capacitor must comply with. Built on top of the PEAS designRequirementsBase mixin (shared name/market/topology/operatingTemperature/terminalType/maximumWeight/maximumDimensions) plus capacitor-specific fields and a narrowed role enum. Closed via top-level unevaluatedProperties (the RAS pattern): base fields validate, unknown keys are rejected.",
+    "unevaluatedProperties": false,
     "allOf": [
         {
             "$ref": "https://psma.com/peas/utils.json#/$defs/designRequirementsBase"
@@ -56,18 +57,10 @@
                     "$ref": "https://psma.com/peas/utils.json#/$defs/capacitorSubApplication"
                 },
                 "allowedTechnologies": {
-                    "description": "Subset of capacitor technologies acceptable for this design. If absent, all technologies are allowed.",
+                    "description": "Subset of capacitor technologies acceptable for this design. If absent, all technologies are allowed. Items reference the SAME enum the part-side `technology` field uses (capacitor.json#/$defs/technology), so requirement and part vocabularies cannot drift apart.",
                     "type": "array",
                     "items": {
-                        "type": "string",
-                        "enum": [
-                            "MLCC Class I",
-                            "MLCC Class II",
-                            "Alum. Electrolytic",
-                            "Alum. Polymer",
-                            "Hybrid Polymer",
-                            "Film Capacitor"
-                        ]
+                        "$ref": "../capacitor.json#/$defs/technology"
                     },
                     "minItems": 1,
                     "uniqueItems": true
@@ -75,9 +68,7 @@
             },
             "required": [
                 "capacitance"
-            ],
-            "additionalProperties": false
+            ]
         }
-    ],
-    "$defs": {}
+    ]
 }

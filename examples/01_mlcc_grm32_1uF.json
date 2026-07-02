@@ -1,0 +1,197 @@
+{
+    "inputs": {
+        "designRequirements": {
+            "name": "output filter MLCC",
+            "capacitance": {
+                "nominal": 1e-06
+            },
+            "ratedVoltage": 100.0,
+            "role": "outputFilter",
+            "allowedTechnologies": [
+                "ceramic-class-2"
+            ],
+            "market": "industrial"
+        },
+        "operatingPoints": [
+            {
+                "name": "500kHz ripple, 25C",
+                "conditions": {
+                    "ambientTemperature": 25.0
+                },
+                "excitation": {
+                    "frequency": 500000.0,
+                    "voltage": {
+                        "processed": {
+                            "label": "sinusoidal",
+                            "offset": 0.0,
+                            "rms": 2.0,
+                            "peak": 2.83
+                        }
+                    },
+                    "current": {
+                        "processed": {
+                            "label": "sinusoidal",
+                            "offset": 0.0,
+                            "rms": 0.5,
+                            "peak": 0.71
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "capacitor": {
+        "manufacturerInfo": {
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "GRM32ER72A105KA35L",
+                    "series": "GRM",
+                    "technology": "ceramic-class-2",
+                    "case": "1210"
+                },
+                "electrical": {
+                    "capacitance": {
+                        "nominal": 1e-06,
+                        "minimum": 9e-07,
+                        "maximum": 1.1e-06
+                    },
+                    "capacitanceDriftLongTermPercent": 0,
+                    "capacitanceMinimumLongTerm": 9e-07,
+                    "ratedVoltage": 100,
+                    "dissipationFactor": 0.025,
+                    "dissipationFactorFrequency": 1000,
+                    "leakageCurrent": 1e-07,
+                    "insulationResistance": 10000000000.0,
+                    "esr": 0.05,
+                    "esrFrequency": 1000000,
+                    "rippleCurrent": 0.5,
+                    "rippleCurrentFrequency": 1000000,
+                    "rippleCurrentTemperature": 25,
+                    "rippleCurrentFrequencyPoints": {
+                        "xData": [
+                            100000,
+                            500000,
+                            1000000,
+                            5000000
+                        ],
+                        "yData": [
+                            0.3,
+                            0.8,
+                            1.0,
+                            0.9
+                        ]
+                    },
+                    "rippleCurrentTemperaturePoints": {
+                        "xData": [
+                            25,
+                            85,
+                            125
+                        ],
+                        "yData": [
+                            1.0,
+                            0.8,
+                            0.6
+                        ]
+                    },
+                    "thermalResistance": 50,
+                    "voltageRatedDcMax": 100
+                },
+                "thermal": {
+                    "temperature": {
+                        "minimum": -55,
+                        "nominal": 25,
+                        "maximum": 125
+                    },
+                    "tcc": {
+                        "minimum": -15,
+                        "nominal": 0,
+                        "maximum": 15
+                    }
+                },
+                "mechanical": {
+                    "dimensions": {
+                        "width": {
+                            "nominal": 0.0025,
+                            "minimum": 0.0023,
+                            "maximum": 0.0027
+                        },
+                        "length": {
+                            "nominal": 0.0032,
+                            "minimum": 0.0029,
+                            "maximum": 0.0035
+                        },
+                        "height": {
+                            "nominal": 0.0025,
+                            "minimum": 0.0023,
+                            "maximum": 0.0027
+                        }
+                    },
+                    "shape": {
+                        "assembly": "SMT",
+                        "shapeType": "SMD Chip",
+                        "footprint": {
+                            "nominal": 8e-06
+                        }
+                    }
+                },
+                "lifetime": {
+                    "usefulLifeComment": "MLCC - no wear-out mechanism"
+                },
+                "modelParams": {
+                    "rs": 0.05,
+                    "cs": 1e-06,
+                    "ls": 1.2e-09,
+                    "riso": 10000000000.0
+                },
+                "factors": {
+                    "rippleCurrentFrequencyFactorFrequency": [
+                        100000,
+                        500000,
+                        1000000,
+                        5000000
+                    ],
+                    "rippleCurrentFrequencyFactorAmplitude": [
+                        0.3,
+                        0.8,
+                        1.0,
+                        0.9
+                    ],
+                    "rippleCurrentTemperatureFactorTemperature": [
+                        25,
+                        85,
+                        125
+                    ],
+                    "rippleCurrentTemperatureFactorAmplitude": [
+                        1.0,
+                        0.8,
+                        0.6
+                    ]
+                },
+                "provenance": [
+                    {
+                        "source": "manufacturerParametric",
+                        "sourceName": "Murata parametric (SimSurfing export)",
+                        "sourceUrl": "https://www.murata.com/products/productdata/GRM.pdf",
+                        "retrievedDate": "2026-06-20"
+                    }
+                ]
+            },
+            "datasheetUrl": "https://www.murata.com/products/productdata/GRM.pdf",
+            "name": "Murata"
+        },
+        "distributorsInfo": [
+            {
+                "name": "Broad",
+                "packaging": "Tape and Reel",
+                "moq": 4000,
+                "vpe": 4000,
+                "leadTime": 12,
+                "cost": {
+                    "value": 0.08,
+                    "currency": "USD"
+                }
+            }
+        ]
+    },
+    "outputs": []
+}

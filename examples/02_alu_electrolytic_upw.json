@@ -1,0 +1,203 @@
+{
+    "inputs": {
+        "designRequirements": {
+            "name": "bulk storage electrolytic",
+            "capacitance": {
+                "nominal": 0.001
+            },
+            "ratedVoltage": 50.0,
+            "minimumRippleCurrent": 1.0,
+            "minimumLifetime": 8000.0,
+            "role": "dcLink",
+            "allowedTechnologies": [
+                "aluminum-electrolytic-wet",
+                "aluminum-hybrid-polymer"
+            ]
+        },
+        "operatingPoints": [
+            {
+                "name": "100Hz mains ripple, 45C",
+                "conditions": {
+                    "ambientTemperature": 45.0
+                },
+                "excitation": {
+                    "frequency": 100.0,
+                    "voltage": {
+                        "processed": {
+                            "label": "sinusoidal",
+                            "offset": 0.0,
+                            "rms": 3.0,
+                            "peak": 4.24
+                        }
+                    },
+                    "current": {
+                        "processed": {
+                            "label": "sinusoidal",
+                            "offset": 0.0,
+                            "rms": 1.2,
+                            "peak": 1.7
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "capacitor": {
+        "manufacturerInfo": {
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "UPW1H102MHD",
+                    "series": "UPW",
+                    "technology": "aluminum-electrolytic-wet",
+                    "case": "16x25"
+                },
+                "electrical": {
+                    "capacitance": {
+                        "nominal": 0.001,
+                        "minimum": 0.0008,
+                        "maximum": 0.0012
+                    },
+                    "capacitanceDriftLongTermPercent": 20,
+                    "capacitanceMinimumLongTerm": 0.00064,
+                    "ratedVoltage": 50,
+                    "dissipationFactor": 0.1,
+                    "dissipationFactorFrequency": 120,
+                    "leakageCurrent": 0.0015,
+                    "insulationResistance": 100000000.0,
+                    "esr": 0.034,
+                    "esrFrequency": 100000,
+                    "rippleCurrent": 2.235,
+                    "rippleCurrentFrequency": 100000,
+                    "rippleCurrentTemperature": 105,
+                    "rippleCurrentFrequencyPoints": {
+                        "xData": [
+                            50,
+                            120,
+                            300,
+                            1000,
+                            10000,
+                            100000
+                        ],
+                        "yData": [
+                            0.7,
+                            0.75,
+                            0.8,
+                            0.9,
+                            1.0,
+                            1.0
+                        ]
+                    },
+                    "rippleCurrentTemperaturePoints": {
+                        "xData": [
+                            60,
+                            85,
+                            95,
+                            105
+                        ],
+                        "yData": [
+                            1.6,
+                            1.2,
+                            1.05,
+                            1.0
+                        ]
+                    },
+                    "thermalResistance": 79.57747154594767,
+                    "voltageRatedDcMax": 50
+                },
+                "thermal": {
+                    "temperature": {
+                        "minimum": -55,
+                        "maximum": 105
+                    }
+                },
+                "mechanical": {
+                    "dimensions": {
+                        "diameter": {
+                            "nominal": 0.016
+                        },
+                        "length": {
+                            "nominal": 0.025
+                        },
+                        "pitch": {
+                            "nominal": 0.0075
+                        },
+                        "pinDiameter": {
+                            "nominal": 0.0008
+                        }
+                    },
+                    "shape": {
+                        "assembly": "THT",
+                        "shapeType": "Radial Cylindrical",
+                        "volume": {
+                            "nominal": 5.026548245743669e-06
+                        },
+                        "footprint": {
+                            "nominal": 0.00020106192982974675
+                        }
+                    }
+                },
+                "lifetime": {
+                    "lifetimeEndurance": 8000,
+                    "aexp": 2.0,
+                    "deltaT0": 10.0,
+                    "endDefinitionC": 20,
+                    "endDefinitionEsr": 200
+                },
+                "modelParams": {
+                    "rs": 0.034,
+                    "cs": 0.001,
+                    "ls": 1.5000000000000002e-08,
+                    "riso": 100000000.0
+                },
+                "factors": {
+                    "rippleCurrentFrequencyFactorFrequency": [
+                        50,
+                        120,
+                        300,
+                        1000,
+                        10000,
+                        100000
+                    ],
+                    "rippleCurrentFrequencyFactorAmplitude": [
+                        0.7,
+                        0.75,
+                        0.8,
+                        0.9,
+                        1.0,
+                        1.0
+                    ],
+                    "rippleCurrentTemperatureFactorTemperature": [
+                        60,
+                        85,
+                        95,
+                        105
+                    ],
+                    "rippleCurrentTemperatureFactorAmplitude": [
+                        1.6,
+                        1.2,
+                        1.05,
+                        1.0
+                    ]
+                },
+                "provenance": [
+                    {
+                        "source": "manufacturerDatasheet",
+                        "sourceName": "Nichicon datasheet (nichicon.co.jp)",
+                        "sourceUrl": "https://www.nichicon.co.jp/english/products/pdfs/UPW1H102MHD.pdf"
+                    }
+                ]
+            },
+            "datasheetUrl": "https://www.nichicon.co.jp/english/products/pdfs/UPW1H102MHD.pdf",
+            "name": "Nichicon"
+        },
+        "distributorsInfo": [
+            {
+                "name": "Mouser/DigiKey",
+                "packaging": "Bulk",
+                "moq": 1,
+                "vpe": 200
+            }
+        ]
+    },
+    "outputs": []
+}

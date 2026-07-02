@@ -1,7 +1,7 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "$id": "https://psma.com/cas/inputs.json",
-    "$comment": "SPDX-License-Identifier: Apache-2.0",
+    "$comment": "SPDX-License-Identifier: MIT",
     "title": "inputs",
     "description": "The description of the inputs that can be used to design or evaluate a Capacitor. Mirrors the MAS inputs structure (operatingPoints[] + designRequirements), with single-element excitation per operating point because a capacitor is two-terminal.",
     "type": "object",

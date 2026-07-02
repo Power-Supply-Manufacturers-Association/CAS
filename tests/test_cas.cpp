@@ -48,7 +48,7 @@ TEST_CASE("CAS cas_to_cias", "[cas]") {
 TEST_CASE("CAS real capacitor with ESR -> multi-atom (C + series R)", "[cas][real][esr]") {
     json doc = json::parse(R"({
         "capacitor": { "manufacturerInfo": { "name": "Nichicon", "datasheetInfo": {
-            "part": { "partNumber": "UPW1V101", "technology": "Alum. Electrolytic" },
+            "part": { "partNumber": "UPW1V101", "technology": "aluminum-electrolytic-wet" },
             "electrical": { "capacitance": { "nominal": 1e-4 }, "ratedVoltage": 35, "esr": 0.085 },
             "mechanical": { "shape": { "assembly": "THT", "shapeType": "radial" } } } } }
     })");
@@ -77,7 +77,7 @@ TEST_CASE("CAS real capacitor with ESR -> multi-atom (C + series R)", "[cas][rea
     // ESR-less real cap stays a single C atom (no invented parasitic).
     json noEsr = json::parse(R"({
         "capacitor": { "manufacturerInfo": { "name": "TDK", "datasheetInfo": {
-            "part": { "partNumber": "C3216", "technology": "MLCC Class I" },
+            "part": { "partNumber": "C3216", "technology": "ceramic-class-1" },
             "electrical": { "capacitance": { "nominal": 1e-7 }, "ratedVoltage": 50 },
             "mechanical": { "shape": { "assembly": "SMT", "shapeType": "chip" } } } } }
     })");
