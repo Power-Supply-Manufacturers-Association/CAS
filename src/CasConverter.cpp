@@ -54,44 +54,23 @@ double resolve_capacitance(const json& peas, const PEAS::Fidelity& fidelity) {
     return PEAS::resolve_dimensional_values(datasheet.get_electrical().get_capacitance());
 }
 
-// A minimal ideal-capacitor PEAS document carrying just the value — the leaf atom the CIAS
-// converter reads (capacitor...electrical.capacitance.nominal) to emit a C card.
+// A minimal ideal-capacitor leaf atom carrying just the value in inputs.designRequirements — where
+// the CIAS converter now reads it (inputs.designRequirements.capacitance) to emit a C card. The
+// `capacitor` object is the empty PEAS discriminator CIAS dispatches on; the electrical value lives
+// in designRequirements, matching how the topology builders emit ideal passives.
 json make_capacitor_atom(double c) {
-    json electrical;
-    electrical["capacitance"]["nominal"] = c;
-    electrical["ratedVoltage"] = 0.0;
-
-    json datasheet;
-    datasheet["part"]["partNumber"] = "ideal";
-    datasheet["part"]["technology"] = "film-polypropylene";
-    datasheet["electrical"] = electrical;
-    datasheet["mechanical"]["shape"]["assembly"] = "SMT";
-    datasheet["mechanical"]["shape"]["shapeType"] = "chip";
-
     json atom;
-    atom["capacitor"]["manufacturerInfo"]["name"] = "ideal";
-    atom["capacitor"]["manufacturerInfo"]["datasheetInfo"] = datasheet;
+    atom["capacitor"] = json::object();
+    atom["inputs"]["designRequirements"]["capacitance"]["nominal"] = c;
     return atom;
 }
 
-// A parasitic resistor atom (the CIAS converter reads resistor...electrical.resistance to emit an R
-// card). Used for a real capacitor's series ESR.
+// A parasitic resistor leaf atom (the CIAS converter reads inputs.designRequirements.resistance to
+// emit an R card). Used for a real capacitor's series ESR. Mirrors RAS/src/RasConverter.cpp.
 json make_resistor_atom(double r) {
-    // Mirrors RAS/src/RasConverter.cpp's make_resistor_atom: the atom must satisfy the
-    // ras resistor.json contract (part.technology, electrical.tolerance/powerRating required).
-    json electrical;
-    electrical["resistance"]["nominal"] = r;
-    electrical["tolerance"] = 0.0;
-    electrical["powerRating"] = 0.0;
-
-    json datasheet;
-    datasheet["part"]["partNumber"] = "esr";
-    datasheet["part"]["technology"] = "thickFilm";
-    datasheet["electrical"] = electrical;
-
     json atom;
-    atom["resistor"]["manufacturerInfo"]["name"] = "parasitic";
-    atom["resistor"]["manufacturerInfo"]["datasheetInfo"] = datasheet;
+    atom["resistor"] = json::object();
+    atom["inputs"]["designRequirements"]["resistance"]["nominal"] = r;
     return atom;
 }
 
