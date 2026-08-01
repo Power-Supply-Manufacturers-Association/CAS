@@ -370,7 +370,7 @@
         },
         "mechanical": {
             "title": "capacitorMechanical",
-            "description": "Mechanical dimensions and shape information",
+            "description": "Mechanical dimensions and shape information. NOTE: the scalar `footprint` field elsewhere in this schema is a mounting AREA in m^2 and is a different concept from `landPattern` (the pad/hole pattern) — the two deliberately carry different names.",
             "type": "object",
             "additionalProperties": false,
             "properties": {
@@ -381,6 +381,14 @@
                 "shape": {
                     "description": "Component shape and assembly information",
                     "$ref": "#/$defs/shape"
+                },
+                "pinout": {
+                    "description": "Per-terminal function map (shared PEAS type, hoisted 2026-08). Real for polarized parts (anode/cathode) and multi-terminal parts (feedthrough, X2Y, 4-terminal low-ESL).",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/pinout"
+                },
+                "landPattern": {
+                    "description": "Manufacturer-recommended PCB land pattern (shared PEAS type, hoisted 2026-08): pad centres, copper sizes and drills as the datasheet's recommended-layout drawing publishes them.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/landPattern"
                 }
             },
             "required": [

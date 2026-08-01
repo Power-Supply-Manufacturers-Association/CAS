@@ -192,6 +192,8 @@ Thermal characteristics — an `allOf` extension of PEAS `datasheetInfoThermal`.
 
 Mechanical dimensions and shape information. **Required: `shape`.** `dimensions` is optional — some catalogue sources publish only the case/shape code without explicit measurements (e.g. Murata RDE/RCE radial-lead series), so it may legitimately be absent at fetch time.
 
+Also optional: `pinout` and `landPattern` — the **shared PEAS types** (hoisted 2026-08): per-terminal `(pin, name, function)` map (real for polarized anode/cathode parts and multi-terminal feedthrough/X2Y/low-ESL parts) and the manufacturer-recommended land pattern. Note the existing scalar `footprint` field is a mounting AREA in m² — a different concept, deliberately a different name; no module defines its own variant of the shared types.
+
 ### dimensions
 
 Physical dimensions of the component. **All fields are optional and nullable.** Use `null` (or omit) for dimensions that do not apply to the form factor (e.g., `diameter` for chip capacitors; `width` and `length` for cylindrical capacitors).
