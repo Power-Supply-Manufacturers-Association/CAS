@@ -90,8 +90,8 @@ The `capacitor.manufacturerInfo.datasheetInfo` object is organized into these se
 
 | Section | Required | Purpose |
 |---|---|---|
-| **part** | Yes | Part identification: part number, series, technology, dielectric code, case code |
-| **electrical** | Yes | Capacitance (with tolerance), rated voltage, ESR (scalar + curve), dissipation factor (fraction, scalar + curve), Q factor, leakage current, ripple current limits, DC-bias derating points, thermal resistance |
+| **part** | Yes | Part identification: part number, series, technology, dielectric code, case code, safety class (X/Y, IEC 60384-14) |
+| **electrical** | Yes | Capacitance (with tolerance), rated voltage (DC and AC), ESR (scalar + curve), dissipation factor (fraction, scalar + curve), Q factor, leakage current, ripple current limits, DC-bias derating points, thermal resistance |
 | **thermal** | No | Operating temperature range, temperature coefficient of capacitance (TCC) |
 | **mechanical** | Yes | Physical dimensions (diameter, width, length, height, thickness, pin pitch/diameter/length), shape type, assembly type, volume, footprint |
 | **lifetime** | No | Endurance hours, lifetime-model parameters, end-of-life definitions, useful life |
@@ -103,6 +103,45 @@ Only **part**, **electrical**, and **mechanical** are required. There is no `bus
 ---
 
 ## Key Features
+
+### Safety Class (X/Y) and AC Rating
+
+Interference-suppression capacitors carry a **safety class** granted under IEC 60384-14 (and its
+UL/CSA equivalents), and their headline rating is an **AC** voltage, not a DC one. CAS gives each of
+those its own home:
+
+- `datasheetInfo.part.safetyClass` -- `{class, standard, approvals[]}`, nullable. `class` is one of
+  `x1`, `x2`, `y1`, `y2`, `y4`, `x1y2`, `none`. It lives in **part**, not **electrical**, because a
+  class is part IDENTITY (a certification held by the series, like a dielectric code), not a measured
+  quantity. `x1y2` is a first-class value, not tidiness: dual-approved parts are real and their sheets
+  say so -- Wuerth's WCAP-FTY2 marking prints both "X1, 330 V~" and "Y2, 300 V~", and KEMET's R41 sheet
+  is titled "Class X1/Y2". A single-valued enum would force a false answer on them.
+- `datasheetInfo.electrical.voltageRatedAcMax` -- V RMS, nullable. The 275 / 300 / 305 / 310 / 440 V~
+  headline rating, a genuinely different quantity from `ratedVoltage` / `voltageRatedDcMax`.
+
+```json
+"part": {
+  "partNumber": "MKX2AW31003I00JB00",
+  "series": "MKP-X2",
+  "technology": "film-polypropylene",
+  "safetyClass": {
+    "class": "x2",
+    "standard": "IEC 60384-14",
+    "approvals": ["VDE 40003472", "UL E134915"]
+  }
+},
+"electrical": {
+  "ratedVoltage": 305.0,
+  "voltageRatedAcMax": 305.0,
+  "voltageRatedDcMax": 560.0
+}
+```
+
+A class is a **certification**: it is written only from a datasheet or a certificate. It is never
+inferred from rated voltage, technology, application text or a part-number substring -- `X7R`,
+`CL21`, `GC355XD` and `35ZLH` all contain an X- or Y-looking substring and none of them is a safety
+class. Null or absent means "unknown / not stated", which is different from the explicit value
+`none`.
 
 ### Lifetime Modeling
 
@@ -474,6 +513,7 @@ CAS/
   examples/
     01_mlcc_grm32_1uF.json          -- Murata MLCC (ceramic-class-2)
     02_alu_electrolytic_upw.json    -- Nichicon aluminum electrolytic
+    03_film_x2_safety_mkp.json      -- WIMA MKP-X2 film safety capacitor (safetyClass + voltageRatedAcMax)
   docs/
     schema.md                       -- Detailed field-by-field schema reference
 ```

@@ -1,0 +1,126 @@
+{
+    "inputs": {
+        "designRequirements": {
+            "name": "mains EMI across-the-line suppression",
+            "capacitance": {
+                "nominal": 1e-07
+            },
+            "ratedVoltage": 305.0,
+            "role": "inputFilter",
+            "allowedTechnologies": [
+                "film-polypropylene"
+            ],
+            "market": "industrial"
+        },
+        "operatingPoints": [
+            {
+                "name": "230 VAC mains, 50 Hz, 25C",
+                "conditions": {
+                    "ambientTemperature": 25.0
+                },
+                "excitation": {
+                    "frequency": 50.0,
+                    "voltage": {
+                        "processed": {
+                            "label": "sinusoidal",
+                            "offset": 0.0,
+                            "rms": 230.0,
+                            "peak": 325.3
+                        }
+                    },
+                    "current": {
+                        "processed": {
+                            "label": "sinusoidal",
+                            "offset": 0.0,
+                            "rms": 0.0072,
+                            "peak": 0.0102
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    "capacitor": {
+        "manufacturerInfo": {
+            "name": "WIMA",
+            "reference": "MKX2AW31003I00JB00",
+            "datasheetUrl": "https://www.wima.de/wp-content/uploads/media/e_WIMA_MKP-X2.pdf",
+            "description": "RFI capacitors MKP-X2 0.1 uF 305 VAC",
+            "datasheetInfo": {
+                "part": {
+                    "partNumber": "MKX2AW31003I00JB00",
+                    "series": "MKP-X2",
+                    "technology": "film-polypropylene",
+                    "case": "PCM 10",
+                    "description": "RFI capacitors MKP-X2 0.1 uF 305 VAC",
+                    "safetyClass": {
+                        "class": "x2",
+                        "standard": "IEC 60384-14",
+                        "approvals": [
+                            "VDE 40003472",
+                            "UL E134915"
+                        ]
+                    }
+                },
+                "electrical": {
+                    "capacitance": {
+                        "nominal": 1e-07,
+                        "minimum": 9.5e-08,
+                        "maximum": 1.05e-07
+                    },
+                    "ratedVoltage": 305.0,
+                    "voltageRatedAcMax": 305.0,
+                    "voltageRatedDcMax": 560.0,
+                    "polarized": false
+                },
+                "thermal": {
+                    "temperature": {
+                        "minimum": -55,
+                        "nominal": 25,
+                        "maximum": 105
+                    }
+                },
+                "mechanical": {
+                    "shape": {
+                        "assembly": "THT",
+                        "shapeType": "Box",
+                        "volume": {
+                            "nominal": 1.248e-06
+                        }
+                    },
+                    "dimensions": {
+                        "width": {
+                            "nominal": 0.008
+                        },
+                        "height": {
+                            "nominal": 0.012
+                        },
+                        "length": {
+                            "nominal": 0.013
+                        },
+                        "pitch": {
+                            "nominal": 0.01
+                        }
+                    }
+                },
+                "provenance": [
+                    {
+                        "source": "manufacturerDatasheet",
+                        "sourceName": "WIMA MKP-X2 series datasheet",
+                        "sourceUrl": "https://www.wima.de/wp-content/uploads/media/e_WIMA_MKP-X2.pdf",
+                        "retrievedDate": "2026-09-05",
+                        "verification": "valuesReadFromSource",
+                        "verificationDate": "2026-09-05",
+                        "verificationMethod": "HTTP GET + pdftotext; class, AC rating, standard and approval numbers read from the series datasheet",
+                        "fields": [
+                            "part.safetyClass",
+                            "electrical.voltageRatedAcMax",
+                            "electrical.voltageRatedDcMax"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "outputs": []
+}

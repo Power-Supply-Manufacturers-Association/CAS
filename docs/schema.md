@@ -108,6 +108,33 @@ Basic part identification. An `allOf` extension of PEAS `datasheetInfoPartBase`.
 | `dielectricCode` | string | Yes | No | Standard EIA / MIL dielectric code (e.g. X7R, X5R, C0G, NP0, Y5V, Y5U). Applies to ceramic technologies only; null or absent for non-ceramic chemistries. |
 | `description` | string | No | No | Free-text part description as on the datasheet |
 | `case` | string | No | No | Case or package code (e.g., "1210", "16x25") |
+| `safetyClass` | object | Yes | No | Interference-suppression safety class as certified (IEC 60384-14). See below. |
+
+### safetyClass
+
+The interference-suppression safety class of the part — part IDENTITY (a certification held by the
+series, like a dielectric code), which is why it sits in `part` and not in `electrical`. Nullable and
+optional. **Required field inside the object: `class`.** `additionalProperties: false`.
+
+| Field | Type | Nullable | Required | Description |
+|---|---|---|---|---|
+| `class` | string (enum) | No | Yes | `x1` \| `x2` \| `y1` \| `y2` \| `y4` \| `x1y2` \| `none` |
+| `standard` | string | Yes | No | Standard the class is granted under, verbatim (e.g. `IEC 60384-14`, `EN 60384-14`, `UL 60384-14`) |
+| `approvals` | array of string | Yes | No | Approval identifiers as printed (e.g. `ENEC-02986`, `UL E345659`, `CSA E60384-14`) |
+
+| `class` value | Meaning |
+|---|---|
+| `x1` | Across-the-line (X) capacitor, peak impulse > 2.5 kV up to 4 kV |
+| `x2` | Across-the-line (X) capacitor, peak impulse ≤ 2.5 kV |
+| `y1` | Line-to-earth (Y) capacitor, double/reinforced insulation, 8 kV impulse |
+| `y2` | Line-to-earth (Y) capacitor, basic/supplementary insulation, 5 kV impulse |
+| `y4` | Line-to-earth (Y) capacitor, 250 V rated, 2.5 kV impulse |
+| `x1y2` | Dual-approved X1 **and** Y2 — a real datasheet statement (Würth WCAP-FTY2 marking: "Y2, 300V~" *and* "X1, 330V~"; KEMET R41 sheet title: "Class X1/Y2"), not a tidiness value |
+| `none` | The datasheet positively states the part carries no safety-class approval |
+
+A class is a **certification**: it comes from a datasheet or a certificate, or it does not exist.
+Never infer it from rated voltage, technology, application text or a part-number substring. Null or
+absent means "unknown / not stated" — which is different from the explicit value `none`.
 
 ### technology enum values
 
@@ -151,6 +178,7 @@ Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** 
 | `ratedVoltage` | number | No | Volts | Rated voltage |
 | `polarized` | boolean | Yes | — | True for polarized chemistries (aluminum electrolytic, tantalum, tantalum-polymer, niobium-oxide, EDLC); false for ceramic, film, mica. Null = unknown — downstream selection should conservatively disallow AC swing. |
 | `voltageRatedDcMax` | number | Yes | Volts | Maximum DC rated voltage |
+| `voltageRatedAcMax` | number | Yes | Volts RMS | Maximum continuous AC rated voltage (50/60 Hz unless the sheet says otherwise). The headline rating of an X/Y-class part (275 / 300 / 305 / 310 / 440 V~) and a **different quantity** from `ratedVoltage` / `voltageRatedDcMax`, which are DC. |
 | `dissipationFactor` | number | Yes | fraction | Dissipation factor (tan delta) as a **fraction** (e.g. `0.025` = 2.5%) |
 | `dissipationFactorFrequency` | number | Yes | Hz | Frequency of the single-point `dissipationFactor` measurement. Prefer `dissipationFactorPoints` for selection logic; this scalar pair is legacy. |
 | `dissipationFactorPoints` | [curve](#curve) | No | — | DF-vs-frequency curve: xData = Hz, yData = tan delta as fraction. Preferred over the scalar when present (DF = ESR·ω·C, so chemistries with low-frequency ESR rise show the same in DF). |

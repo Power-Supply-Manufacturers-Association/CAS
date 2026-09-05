@@ -177,6 +177,49 @@
                                 "string",
                                 "null"
                             ]
+                        },
+                        "safetyClass": {
+                            "description": "Interference-suppression safety class of the part (IEC 60384-14 / EN 60384-14 and their UL/CSA equivalents). This is part IDENTITY \u2014 a certification held by the series, like a dielectric code, not an electrical quantity \u2014 so it lives here beside `technology` and `dielectricCode` rather than under `electrical`. It states what the datasheet or the certificate says and NOTHING ELSE: a class is never to be inferred from rated voltage, technology, application text or a part-number substring. Null or absent means the class is unknown / not stated; the explicit class value `none` means the datasheet positively states the part carries no safety-class approval.",
+                            "type": [
+                                "object",
+                                "null"
+                            ],
+                            "additionalProperties": false,
+                            "required": [
+                                "class"
+                            ],
+                            "properties": {
+                                "class": {
+                                    "description": "The safety class as certified. `x1`/`x2` are across-the-line (X) capacitors (IEC 60384-14 sub-class X1: peak impulse > 2.5 kV up to 4 kV; X2: <= 2.5 kV). `y1`/`y2`/`y4` are line-to-earth (Y) capacitors (Y1 double/reinforced insulation, 8 kV impulse; Y2 basic/supplementary, 5 kV; Y4 250 V rated, 2.5 kV). `x1y2` is a single value on purpose, not tidiness: dual-approved parts are real and their datasheets say so \u2014 W\u00fcrth's WCAP-FTY2 marking block prints both \"Safety Class & Rated Voltage: Y2, 300V~\" and \"X1, 330V~\", and KEMET's R41 sheet is titled \"Class X1/Y2\" \u2014 and a single-valued enum would force a false answer on them. `none` means the sheet states no safety-class approval.",
+                                    "type": "string",
+                                    "enum": [
+                                        "x1",
+                                        "x2",
+                                        "y1",
+                                        "y2",
+                                        "y4",
+                                        "x1y2",
+                                        "none"
+                                    ]
+                                },
+                                "standard": {
+                                    "description": "The safety standard the class is granted under, verbatim as the datasheet prints it (e.g. \"IEC 60384-14\", \"EN 60384-14\", \"UL 60384-14\"). Null or absent when the sheet names a class but no standard.",
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "approvals": {
+                                    "description": "Approval identifiers held by the part or its series, as printed (e.g. \"ENEC-02986\", \"UL E345659\", \"CSA E60384-14\"). These are the certificate references that make the class a certification rather than a label. Null or absent when the sheet publishes none; an empty array means the same and is equally acceptable.",
+                                    "type": [
+                                        "array",
+                                        "null"
+                                    ],
+                                    "items": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
                         }
                     },
                     "additionalProperties": false,
@@ -254,6 +297,13 @@
                 },
                 "voltageRatedDcMax": {
                     "description": "Maximum DC rated voltage in Volts",
+                    "type": [
+                        "number",
+                        "null"
+                    ]
+                },
+                "voltageRatedAcMax": {
+                    "description": "Maximum continuous AC rated voltage in Volts RMS, at the datasheet's reference frequency (50/60 Hz unless the sheet says otherwise). This is the headline rating of an interference-suppression (X/Y class) capacitor \u2014 275 / 300 / 305 / 310 / 440 V~ \u2014 and is a DIFFERENT quantity from `ratedVoltage` / `voltageRatedDcMax`, which are DC. Populate it only where the source publishes an AC rating; null or absent for DC-only parts.",
                     "type": [
                         "number",
                         "null"
