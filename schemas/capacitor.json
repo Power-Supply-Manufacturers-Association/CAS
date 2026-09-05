@@ -116,6 +116,42 @@
                 "part",
                 "electrical",
                 "mechanical"
+            ],
+            "allOf": [
+                {
+                    "title": "class2HasNoLinearTemperatureCoefficient",
+                    "description": "A Class-2 ceramic dielectric has no linear temperature coefficient to state (IEC 60384-9: its permittivity vs temperature is non-linear, so the standard bounds a total percent change instead). `thermal.temperatureCoefficient` is therefore forbidden on ceramic-class-2 parts; use `thermal.capacitanceChangeOverTemperature`.",
+                    "if": {
+                        "type": "object",
+                        "required": [
+                            "part"
+                        ],
+                        "properties": {
+                            "part": {
+                                "type": "object",
+                                "required": [
+                                    "technology"
+                                ],
+                                "properties": {
+                                    "technology": {
+                                        "const": "ceramic-class-2"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "then": {
+                        "properties": {
+                            "thermal": {
+                                "not": {
+                                    "required": [
+                                        "temperatureCoefficient"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
             ]
         },
         "part": {
@@ -353,7 +389,8 @@
                             "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
                         },
                         "tcc": {
-                            "description": "Capacitance change over temperature range",
+                            "description": "DEPRECATED (2026-09-05, ABT #544) \u2014 do not write this field on new records; read `temperatureCoefficient` (Class 1) or `capacitanceChangeOverTemperature` (Class 2) instead. It is kept, and still accepted, only so consumers written against it do not break. The defect: a single field was asked to hold two DIFFERENT physical quantities \u2014 EIA-198 / IEC 60384-8 gives Class-1 dielectrics a linear temperature COEFFICIENT in ppm/\u00b0C (a rate), while IEC 60384-9 gives Class-2 dielectrics a bounded total percent capacitance CHANGE over a stated temperature range (no rate exists; their permittivity vs temperature is non-linear). No unit could make one field hold both and stay sortable or comparable, so the field was split.",
+                            "deprecated": true,
                             "oneOf": [
                                 {
                                     "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
@@ -362,6 +399,51 @@
                                     "type": "null"
                                 }
                             ]
+                        },
+                        "temperatureCoefficient": {
+                            "description": "Class-1 (temperature-compensating) LINEAR TEMPERATURE COEFFICIENT of capacitance, in ppm/\u00b0C (equivalently ppm/K \u2014 the quantity is a rate, dC/C per kelvin, unit K^-1). This is the EIA-198 / IEC 60384-8 quantity named by the dielectric code: C0G/NP0 is 0 \u00b1 30 ppm/\u00b0C, U2J is -750 ppm/\u00b0C (tolerance \u00b1120). Store the RAW ppm number (-750, not -750e-6, not -0.075); `minimum`/`maximum` carry the tolerance band. Class-2 dielectrics have no such coefficient \u2014 use `capacitanceChangeOverTemperature` for those. Replaces `tcc` for Class-1 parts.",
+                            "oneOf": [
+                                {
+                                    "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
+                                },
+                                {
+                                    "type": "null"
+                                }
+                            ]
+                        },
+                        "capacitanceChangeOverTemperature": {
+                            "description": "Bounded TOTAL capacitance change over a stated temperature range, in percent \u2014 the EIA-198 / IEC 60384-9 Class-2 quantity (X7R: \u00b115 % over -55..+125 \u00b0C; X5R: \u00b115 % over -55..+85 \u00b0C; X7T: +22/-33 %). It is NOT a rate and is meaningless without the span it applies over, which is why `temperatureRange` is required beside `changePercent`. Class-1 and film parts may also carry it (a ppm/\u00b0C coefficient implies a total change once a \u0394T is chosen), but a Class-1 part\u0027s primary figure is `temperatureCoefficient`. Replaces `tcc` for Class-2 parts.",
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "changePercent",
+                                "temperatureRange"
+                            ],
+                            "properties": {
+                                "changePercent": {
+                                    "description": "Capacitance change in PERCENT of the 25 \u00b0C value, as the datasheet prints it (X7R: minimum -15, maximum 15). Percent, not a fraction \u2014 the unit is in the field name so it cannot be misread; a `nominal` may be given when the datasheet states a typical, and omitted when the figure is only a bound.",
+                                    "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
+                                },
+                                "temperatureRange": {
+                                    "description": "The temperature span, in degrees Celsius, over which `changePercent` is bounded (X7R: minimum -55, maximum 125). This is the range the percent figure is specified over and may be narrower than the part\u0027s full operating range in `temperature`.",
+                                    "type": "object",
+                                    "additionalProperties": false,
+                                    "required": [
+                                        "minimum",
+                                        "maximum"
+                                    ],
+                                    "properties": {
+                                        "minimum": {
+                                            "description": "Low end of the span, in degrees Celsius.",
+                                            "type": "number"
+                                        },
+                                        "maximum": {
+                                            "description": "High end of the span, in degrees Celsius.",
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            }
                         }
                     },
                     "additionalProperties": false

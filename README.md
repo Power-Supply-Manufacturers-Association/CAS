@@ -322,7 +322,10 @@ Both examples below are trimmed versions of the full documents in `examples/`, w
         },
         "thermal": {
           "temperature": {"minimum": -55, "nominal": 25, "maximum": 125},
-          "tcc": {"minimum": -15, "nominal": 0, "maximum": 15}
+          "capacitanceChangeOverTemperature": {
+            "changePercent": {"minimum": -15, "nominal": 0, "maximum": 15},
+            "temperatureRange": {"minimum": -55, "maximum": 125}
+          }
         },
         "mechanical": {
           "dimensions": {

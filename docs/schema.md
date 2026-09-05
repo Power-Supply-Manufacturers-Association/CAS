@@ -179,12 +179,15 @@ Thermal characteristics — an `allOf` extension of PEAS `datasheetInfoThermal`.
 |---|---|---|---|---|
 | `operatingTemperature` | [dimensionWithTolerance](#dimensionwithtolerance) | No | °C | Operating temperature range (inherited from the PEAS base) |
 | `temperature` | [dimensionWithTolerance](#dimensionwithtolerance) | No | °C | Operating temperature range of the part. Plain optional dimensionWithTolerance — omit when the datasheet does not state it (an empty object or null is not allowed). Minimum = lower limit, maximum = upper limit, nominal = reference. |
-| `tcc` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | % | Temperature coefficient of capacitance (capacitance change over temperature range). Minimum and maximum define the bounds. |
+| `temperatureCoefficient` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | ppm/°C | **Class 1 only.** Linear temperature coefficient of capacitance — a rate (dC/C per kelvin, unit K⁻¹), the EIA-198 / IEC 60384-8 quantity named by the dielectric code. Raw ppm numbers: C0G/NP0 `{nominal: 0, minimum: -30, maximum: 30}`, U2J `{nominal: -750, minimum: -870, maximum: -630}`. Forbidden on `ceramic-class-2` (see below). |
+| `capacitanceChangeOverTemperature` | object | No | — | **Class 2 (and film).** Bounded *total* capacitance change over a stated span — the IEC 60384-9 quantity. `{changePercent: dimensionWithTolerance (%), temperatureRange: {minimum, maximum} (°C)}`, both required: X7R is `{changePercent: {minimum: -15, maximum: 15}, temperatureRange: {minimum: -55, maximum: 125}}`. |
+| `tcc` | [dimensionWithTolerance](#dimensionwithtolerance) | Yes | — | **DEPRECATED (2026-09-05, ABT #544).** Do not write. Kept and still accepted so consumers written against it do not break. |
 
 **Notes:**
-- For `ceramic-class-1` (C0G/NP0), `tcc` is typically very small (e.g., +/- 30 ppm/K).
-- For `ceramic-class-2`, `tcc` represents the percentage change allowed by the dielectric code (e.g., X7R allows +/- 15%).
-- For electrolytic capacitors, `tcc` is often `null` because capacitance vs. temperature behavior is not specified as a simple tolerance.
+- **Class 1 and Class 2 do not measure the same thing, so they no longer share a field.** EIA-198 / IEC 60384-8 give a Class-1 dielectric a *linear temperature coefficient* in ppm/°C (a rate: C0G is 0 ± 30 ppm/°C, U2J is -750 ppm/°C). IEC 60384-9 gives a Class-2 dielectric a *bounded total percent change* over the rated span (X7R is ± 15 % over -55..+125 °C), because its permittivity vs. temperature is non-linear and no single rate exists. `tcc` was asked to hold both, which is why it was split — no unit could make one field sortable across both.
+- A percent figure is meaningless without the span it applies over, so `temperatureRange` is required beside `changePercent`.
+- The schema enforces the one conditional it can state cleanly: a `ceramic-class-2` part MUST NOT carry `temperatureCoefficient`. The converse is not enforced — a Class-1 or film part may legitimately quote a percent-over-range figure as well.
+- For electrolytic capacitors both fields are usually absent: capacitance vs. temperature is not specified as a simple tolerance.
 
 ---
 
