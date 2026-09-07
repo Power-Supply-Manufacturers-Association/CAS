@@ -109,6 +109,7 @@ Basic part identification. An `allOf` extension of PEAS `datasheetInfoPartBase`.
 | `description` | string | No | No | Free-text part description as on the datasheet |
 | `case` | string | No | No | Case or package code (e.g., "1210", "16x25") |
 | `safetyClass` | object | Yes | No | Interference-suppression safety class as certified (IEC 60384-14). See below. |
+| `qualifiedReliability` | object | Yes | No | Failure-rate level the part is qualified to (MIL-PRF-39003 / 39006 / 39014, QPL). See below. |
 
 ### safetyClass
 
@@ -164,6 +165,40 @@ A closed 20-value enum (`capacitor.json#/$defs/technology`) so downstream select
 | `vacuum` | Vacuum capacitor |
 
 ---
+
+
+### qualifiedReliability
+
+The failure-rate level the part is **qualified** to. Part IDENTITY, like `safetyClass` — it comes from
+a qualifying specification, not from a measurement or a prediction — so it sits in `part`, not in
+`electrical`. Nullable and optional. **Required field inside the object: `specification`.**
+`additionalProperties: false`. Defined once in PEAS (`peas/utils.json#/$defs/qualifiedReliability`)
+and `$ref`-ed here, because it is not capacitor-specific: magnetics carry QPL qualifications too.
+
+Why it exists: MIL-PRF-39003 and MIL-PRF-39006 print **one** ratings row covering every failure-rate
+level, so the parts under a rating are identical in capacitance, voltage, tolerance, case and every
+electrical value, and differ **only** by this grade and their dash number. Without this field, 4,878
+of the catalogue's 6,373 MIL rows are byte-identical apart from a part number, and nothing on the
+record says which level each one is.
+
+| Field | Type | Nullable | Required | Description |
+|---|---|---|---|---|
+| `specification` | string | No | Yes | The qualifying specification as printed (e.g. `MIL-PRF-39003`, `MIL-PRF-39006`, `MIL-PRF-39014`). Open vocabulary — new specifications appear faster than an enum can be revised. |
+| `grade` | string | Yes | No | The level as the specification itself letters it (`M`, `P`, `R`, `S` exponential; `G`, `B`, `C`, `D` Weibull under MIL-PRF-39003). Kept as the printed token, **not** decoded — the same letter means different rates under different specifications. |
+| `failureRate` | number | Yes | No | Failures per **second** (1/s), SI like every other value here. Convert on the way in: `1.0 %/1000 h` = `2.7778e-9`, and `1 FIT` = `2.7778e-13`. |
+| `distribution` | string (enum) | Yes | No | `exponential` \| `weibull` |
+| `confidenceLevel` | number | Yes | No | Fraction, not percent (`0.9`, not `90`) — the house convention for ratios, as with `dissipationFactor`. |
+
+`distribution` is load-bearing, not decoration. Under MIL-PRF-39003 grades **M** and **G** are *both*
+1.0 %/1000 h and are told apart only by the model: M is exponential, G is Weibull. A record carrying
+the rate without the distribution has thrown away the difference between two separately orderable
+parts.
+
+The unit choice is deliberate and slightly uncomfortable. Every datasheet and every engineer says FIT;
+SI says 1/s, which makes a typical value `2.8e-13`. The house rule is SI everywhere with only two
+documented exceptions (acoustic noise in dBA, `pollutionDegree` as a string), and a third exception
+costs more in the long run than a conversion at the display layer.
+
 
 ## electrical
 

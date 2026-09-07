@@ -1,0 +1,105 @@
+{
+  "inputs": {
+    "designRequirements": {
+      "name": "bulk storage electrolytic",
+      "capacitance": {
+        "nominal": 0.001
+      },
+      "ratedVoltage": 50.0,
+      "minimumRippleCurrent": 1.0,
+      "minimumLifetime": 8000.0,
+      "role": "dcLink",
+      "allowedTechnologies": [
+        "aluminum-electrolytic-wet",
+        "aluminum-hybrid-polymer"
+      ]
+    },
+    "operatingPoints": [
+      {
+        "name": "100Hz mains ripple, 45C",
+        "conditions": {
+          "ambientTemperature": 45.0
+        },
+        "excitation": {
+          "frequency": 100.0,
+          "voltage": {
+            "processed": {
+              "label": "sinusoidal",
+              "offset": 0.0,
+              "rms": 3.0,
+              "peak": 4.24
+            }
+          },
+          "current": {
+            "processed": {
+              "label": "sinusoidal",
+              "offset": 0.0,
+              "rms": 1.2,
+              "peak": 1.7
+            }
+          }
+        }
+      }
+    ]
+  },
+  "capacitor": {
+    "manufacturerInfo": {
+      "name": "Vishay",
+      "reference": "M39003/01-6250",
+      "status": "production",
+      "datasheetUrl": "https://www.vishay.com/doc?40018",
+      "datasheetInfo": {
+        "part": {
+          "partNumber": "M39003/01-6250",
+          "technology": "tantalum-mno2",
+          "series": "M39003/01",
+          "case": "A",
+          "qualifiedReliability": {
+            "specification": "MIL-PRF-39003",
+            "grade": "R",
+            "failureRate": 2.7778e-10,
+            "distribution": "exponential",
+            "confidenceLevel": 0.9
+          }
+        },
+        "electrical": {
+          "capacitance": {
+            "nominal": 2.7e-07,
+            "minimum": 2.43e-07,
+            "maximum": 2.97e-07
+          },
+          "ratedVoltage": 75.0,
+          "polarized": true,
+          "leakageCurrent": 3e-07,
+          "dissipationFactor": 0.02,
+          "dissipationFactorFrequency": 120.0
+        },
+        "mechanical": {
+          "shape": {
+            "shapeType": "Axial",
+            "assembly": "THT"
+          }
+        },
+        "provenance": [
+          {
+            "source": "manufacturerDatasheet",
+            "sourceName": "Vishay M39003/01 datasheet, document 40018",
+            "sourceUrl": "https://www.vishay.com/doc?40018",
+            "retrievedDate": "2026-09-07",
+            "verification": "valuesReadFromSource",
+            "verificationDate": "2026-09-07",
+            "fields": [
+              "part.case",
+              "electrical.capacitance",
+              "electrical.ratedVoltage",
+              "electrical.leakageCurrent",
+              "electrical.dissipationFactor",
+              "electrical.dissipationFactorFrequency"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "outputs": []
+}

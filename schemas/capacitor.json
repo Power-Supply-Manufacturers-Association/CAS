@@ -178,6 +178,10 @@
                                 "null"
                             ]
                         },
+                        "qualifiedReliability": {
+                            "description": "Failure-rate level this part is qualified to, for MIL-PRF-39003 / 39006 / 39014 and QPL parts. Part IDENTITY, beside `safetyClass` and `dielectricCode` rather than under `electrical`: the specification prints ONE ratings row covering every level, so the members of a rating differ ONLY by this and by their dash number. Without it, 4,878 of 6,373 MIL rows in the catalogue are byte-identical apart from a part number.",
+                            "$ref": "https://psma.com/peas/utils.json#/$defs/qualifiedReliability"
+                        },
                         "safetyClass": {
                             "description": "Interference-suppression safety class of the part (IEC 60384-14 / EN 60384-14 and their UL/CSA equivalents). This is part IDENTITY \u2014 a certification held by the series, like a dielectric code, not an electrical quantity \u2014 so it lives here beside `technology` and `dielectricCode` rather than under `electrical`. It states what the datasheet or the certificate says and NOTHING ELSE: a class is never to be inferred from rated voltage, technology, application text or a part-number substring. Null or absent means the class is unknown / not stated; the explicit class value `none` means the datasheet positively states the part carries no safety-class approval.",
                             "type": [
