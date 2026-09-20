@@ -224,6 +224,10 @@ Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** 
 | `esr` | number | Yes | Ohms | Equivalent series resistance (ESR) |
 | `esrFrequency` | number | Yes | Hz | Frequency of the single-point `esr` measurement. Prefer `esrPoints` for selection logic; this scalar pair is legacy. |
 | `esrPoints` | [curve](#curve) | No | — | ESR-vs-frequency curve: xData = Hz, yData = Ohms. At sub-kHz (mains) frequencies ESR can be 10–100× its 100 kHz datasheet value for class-2 ceramic and polymer chemistries. Preferred over the scalar when present. |
+| `impedancePoints` | [curve](#curve) | No | — | Impedance-magnitude-vs-frequency: xData = Hz, yData = Ohms. Shows the capacitive region, the self-resonant minimum and the inductive region above it — none of which the scalar fields can express. Capacitor-side equivalent of MAS `impedancePoints`. |
+| `capacitanceFrequencyPoints` | [curve](#curve) | No | — | Effective capacitance vs frequency: xData = Hz, yData = F. Distinct from `capacitanceBiasPoints`, which derates against DC bias; these two effects are real and independent. |
+| `inductanceFrequencyPoints` | [curve](#curve) | No | — | Equivalent series inductance (ESL) vs frequency: xData = Hz, yData = H. Governs behaviour **above** self-resonance, where the part stops acting as a capacitor. Legitimately absent for parts that never self-resonate inside the measured sweep. |
+| `rippleCurrentPoints` | [curve](#curve) | No | — | **Absolute** ripple-current capability vs frequency: xData = Hz, yData = **amperes**. Not interchangeable with `rippleCurrentFrequencyPoints`, which is a dimensionless 0–1 derating multiplier — see below. |
 | `rippleCurrent` | number | Yes | Amperes | Ripple current (RMS) |
 | `rippleCurrentFrequency` | number | Yes | Hz | Frequency at which ripple current is specified |
 | `rippleCurrentTemperature` | number | Yes | °C | Temperature at which ripple current is specified |
@@ -233,6 +237,24 @@ Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** 
 | `_esrWarning` | boolean, string | Yes | — | Internal flag/message: ESR value estimated or extrapolated (not from datasheet) |
 
 ---
+
+
+### rippleCurrentPoints vs rippleCurrentFrequencyPoints
+
+These two look alike and are not. `rippleCurrentFrequencyPoints` is a **dimensionless derating
+multiplier** (0–1) applied to a part's rated ripple current. `rippleCurrentPoints` is the
+**absolute capability in amperes**. Vendors publish both shapes, and writing amperes into the
+multiplier field is a substitution nothing downstream can detect — the numbers stay plausible and
+every guard stays green. Hence two fields rather than one.
+
+Prefer a vendor-published measured curve. Some vendor simulators (KEMET's K-SIM among them) will
+produce a ripple-current-vs-frequency curve from a **self-heating model** whose ΔT convention is
+not stated: sampled for `A700D107M006ATE018` it yields ~3.7 A at 100 kHz, where that part's own
+datasheet scalar says 2.8 A at 100 kHz / 105 °C. Sampling a simulator is allowed — it is the curve
+engineers actually work from — but the provenance entry must record that the values were sampled
+from a simulator rather than read from a published measurement, because a modelled 3.7 A and a
+measured 2.8 A are different claims about the same part.
+
 
 ## thermal
 

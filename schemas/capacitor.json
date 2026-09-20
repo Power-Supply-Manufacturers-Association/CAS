@@ -373,6 +373,22 @@
                         "null"
                     ]
                 },
+                "impedancePoints": {
+                    "description": "Impedance-magnitude-vs-frequency curve. xData = frequency in Hz, yData = |Z| in Ohms. The curve a designer actually reads for a decoupling or filtering part: it shows the capacitive region, the self-resonant minimum where |Z| bottoms out, and the inductive region above it \u2014 none of which the scalar capacitance and esr fields can express. MAS already carries impedancePoints for magnetics; this is the capacitor-side equivalent, same shape.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
+                },
+                "capacitanceFrequencyPoints": {
+                    "description": "Effective-capacitance-vs-frequency curve. xData = frequency in Hz, yData = capacitance in Farads. Distinct from capacitanceBiasPoints, which derates against DC bias: this one derates against frequency. Both effects are real and independent, and a class-2 ceramic loses capacitance to each of them separately.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
+                },
+                "inductanceFrequencyPoints": {
+                    "description": "Equivalent-series-inductance (ESL) vs frequency. xData = frequency in Hz, yData = inductance in Henries. ESL governs behaviour ABOVE self-resonance, where the part stops acting as a capacitor and its impedance rises with frequency \u2014 which is what decides whether a decoupling capacitor works at the frequency it was chosen for. Legitimately absent for parts that never reach self-resonance inside the measured sweep; that is a real answer, not a gap.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
+                },
+                "rippleCurrentPoints": {
+                    "description": "ABSOLUTE ripple-current capability vs frequency. xData = frequency in Hz, yData = current in AMPERES. Deliberately separate from rippleCurrentFrequencyPoints, which is a dimensionless 0-1 DERATING MULTIPLIER: vendors publish both shapes and they are not interchangeable, so amperes must never be written into the multiplier field (nothing downstream can detect that substitution). Prefer a vendor-published measured curve. Where the figures come from a vendor simulator sampled as if measured \u2014 K-SIM's self-heating model, for instance, whose delta-T convention is not stated \u2014 the provenance entry must say so, because a modelled 3.7 A and a datasheet 2.8 A for the same part are different claims.",
+                    "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
+                },
                 "esrPoints": {
                     "description": "ESR-vs-frequency curve. xData = frequency in Hz, yData = ESR in Ohms. Captures the strong frequency dependence of ESR for class-2 ceramic and polymer chemistries — at low frequency (sub-kHz, e.g. 50/60 Hz mains) ESR can be one to two orders of magnitude larger than its 100 kHz datasheet value (see https://passive-components.eu/esr-of-capacitors-mechanisms-measurements-and-impact-to-applications/ Fig. 4). Selection logic must prefer this curve over the scalar esr field when present.",
                     "$ref": "https://psma.com/peas/utils.json#/$defs/curve"
