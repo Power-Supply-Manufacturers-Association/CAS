@@ -120,9 +120,10 @@ optional. **Required field inside the object: `class`.** `additionalProperties: 
 
 | Field | Type | Nullable | Required | Description |
 |---|---|---|---|---|
-| `class` | string (enum) | No | Yes | `x1` \| `x2` \| `y1` \| `y2` \| `y4` \| `x1y2` \| `none` |
+| `class` | string (enum) | No | Yes | `x1` \| `x2` \| `y1` \| `y2` \| `y4` \| `x1y2` \| `x1y1` \| `none` |
 | `standard` | string | Yes | No | Standard the class is granted under, verbatim (e.g. `IEC 60384-14`, `EN 60384-14`, `UL 60384-14`) |
 | `approvals` | array of string | Yes | No | Approval identifiers as printed (e.g. `ENEC-02986`, `UL E345659`, `CSA E60384-14`) |
+| `ratings` | array of object | No | No | The rated AC voltage **per class**, one entry per class held: `{class, ratedVoltageAc, standard?}`. See below. |
 
 | `class` value | Meaning |
 |---|---|
@@ -130,13 +131,31 @@ optional. **Required field inside the object: `class`.** `additionalProperties: 
 | `x2` | Across-the-line (X) capacitor, peak impulse ≤ 2.5 kV |
 | `y1` | Line-to-earth (Y) capacitor, double/reinforced insulation, 8 kV impulse |
 | `y2` | Line-to-earth (Y) capacitor, basic/supplementary insulation, 5 kV impulse |
-| `y4` | Line-to-earth (Y) capacitor, 250 V rated, 2.5 kV impulse |
+| `y4` | Line-to-earth (Y) capacitor, basic/supplementary insulation, rated below 150 V, 2.5 kV impulse |
 | `x1y2` | Dual-approved X1 **and** Y2 — a real datasheet statement (Würth WCAP-FTY2 marking: "Y2, 300V~" *and* "X1, 330V~"; KEMET R41 sheet title: "Class X1/Y2"), not a tidiness value |
+| `x1y1` | Dual-approved X1 **and** Y1 — e.g. KEMET C700KJN, whose series names `X1-440 Y1-400` |
 | `none` | The datasheet positively states the part carries no safety-class approval |
 
 A class is a **certification**: it comes from a datasheet or a certificate, or it does not exist.
 Never infer it from rated voltage, technology, application text or a part-number substring. Null or
 absent means "unknown / not stated" — which is different from the explicit value `none`.
+
+#### `ratings` — the voltage each class is granted at
+
+IEC 60384-14 grants a class **at** a rated voltage, and a dual-approved part carries a *different*
+voltage for each class: TDK prints `X1/440VAC, Y1/400VAC` on one line, and the same `X1` appears at
+400, 440 and 760 V across real parts. A single scalar voltage cannot hold that, so `ratings` records
+one entry per class, each with its own `ratedVoltageAc`. Item classes are single tokens only.
+
+The schema enforces agreement with `class`: a one-entry `ratings` must use that class's own token,
+`x1y2`/`x1y1` must carry exactly those two classes, and `none` may not carry `ratings` at all.
+Y-class voltages are bounded by the standard's bands — Y1 at most 500 V, Y2 150 to 300 V, Y4 below
+150 V. **X-class voltages are deliberately NOT bounded:** the standard defines X sub-classes by peak
+impulse withstand, not by rated voltage, so any bound would reject real parts.
+
+Omit `ratings` when the datasheet states a class but no per-class voltage. It does not replace
+`electrical.ratedVoltage` / `voltageRatedAcMax`, which keep the headline scalar. Repeating a class to
+describe an assembly of several capacitors is not what this field is for — model that as a CIAS brick.
 
 ### technology enum values
 

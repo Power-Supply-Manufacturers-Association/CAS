@@ -201,7 +201,7 @@
                             ],
                             "properties": {
                                 "class": {
-                                    "description": "The safety class as certified. `x1`/`x2` are across-the-line (X) capacitors (IEC 60384-14 sub-class X1: peak impulse > 2.5 kV up to 4 kV; X2: <= 2.5 kV). `y1`/`y2`/`y4` are line-to-earth (Y) capacitors (Y1 double/reinforced insulation, 8 kV impulse; Y2 basic/supplementary, 5 kV; Y4 250 V rated, 2.5 kV). `x1y2` is a single value on purpose, not tidiness: dual-approved parts are real and their datasheets say so \u2014 W\u00fcrth's WCAP-FTY2 marking block prints both \"Safety Class & Rated Voltage: Y2, 300V~\" and \"X1, 330V~\", and KEMET's R41 sheet is titled \"Class X1/Y2\" \u2014 and a single-valued enum would force a false answer on them. `none` means the sheet states no safety-class approval.",
+                                    "description": "The safety class as certified. `x1`/`x2` are across-the-line (X) capacitors (IEC 60384-14 sub-class X1: peak impulse > 2.5 kV up to 4 kV; X2: <= 2.5 kV). `y1`/`y2`/`y4` are line-to-earth (Y) capacitors (Y1 double/reinforced insulation, 8 kV impulse; Y2 basic/supplementary, 5 kV; Y4 basic/supplementary, rated below 150 V, 2.5 kV). `x1y2` and `x1y1` are single values on purpose, not tidiness: dual-approved parts are real and their datasheets say so \u2014 W\u00fcrth's WCAP-FTY2 marking block prints both \"Safety Class & Rated Voltage: Y2, 300V~\" and \"X1, 330V~\", and KEMET's R41 sheet is titled \"Class X1/Y2\" \u2014 and a single-valued enum would force a false answer on them. When `ratings` is present, `class` is the summary token for the same fact and must agree with it: a one-entry `ratings` uses that class's own token, a two-entry `ratings` uses the combined token. `none` means the sheet states no safety-class approval.",
                                     "type": "string",
                                     "enum": [
                                         "x1",
@@ -210,8 +210,107 @@
                                         "y2",
                                         "y4",
                                         "x1y2",
+                                        "x1y1",
                                         "none"
                                     ]
+                                },
+                                "ratings": {
+                                    "description": "The certification stated per class. IEC 60384-14 grants a class AT a rated voltage, and a dual-approved part carries a DIFFERENT voltage for each class \u2014 TDK prints `X1/440VAC, Y1/400VAC` on one line, KEMET names `X1-440 Y2-300` in the series itself. One entry per class held, each with the AC voltage that class is granted at. Items use single-class tokens only: a rating belongs to one class by construction. Y-class voltages are bounded by the standard's own bands; X-class voltages are NOT, because IEC 60384-14 defines X sub-classes by peak impulse withstand, not by rated voltage. Omit when the datasheet states a class but no per-class voltage. Repeating a class to describe an assembly of several capacitors is not what this field is for \u2014 that is a CIAS brick of several capacitor parts.",
+                                    "type": "array",
+                                    "minItems": 1,
+                                    "items": {
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "required": [
+                                            "class",
+                                            "ratedVoltageAc"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "description": "The single class this rating is granted for.",
+                                                "type": "string",
+                                                "enum": [
+                                                    "x1",
+                                                    "x2",
+                                                    "y1",
+                                                    "y2",
+                                                    "y4"
+                                                ]
+                                            },
+                                            "ratedVoltageAc": {
+                                                "description": "Rated AC voltage in Volts RMS for THIS class, at the datasheet's reference frequency (50/60 Hz unless the sheet says otherwise).",
+                                                "type": "number",
+                                                "exclusiveMinimum": 0
+                                            },
+                                            "standard": {
+                                                "description": "The standard this class is granted under, verbatim as printed, when it differs per class. Omit when the part-level `standard` covers both.",
+                                                "type": [
+                                                    "string",
+                                                    "null"
+                                                ]
+                                            }
+                                        },
+                                        "allOf": [
+                                            {
+                                                "if": {
+                                                    "properties": {
+                                                        "class": {
+                                                            "const": "y1"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "class"
+                                                    ]
+                                                },
+                                                "then": {
+                                                    "properties": {
+                                                        "ratedVoltageAc": {
+                                                            "maximum": 500
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "if": {
+                                                    "properties": {
+                                                        "class": {
+                                                            "const": "y2"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "class"
+                                                    ]
+                                                },
+                                                "then": {
+                                                    "properties": {
+                                                        "ratedVoltageAc": {
+                                                            "minimum": 150,
+                                                            "maximum": 300
+                                                        }
+                                                    }
+                                                }
+                                            },
+                                            {
+                                                "if": {
+                                                    "properties": {
+                                                        "class": {
+                                                            "const": "y4"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "class"
+                                                    ]
+                                                },
+                                                "then": {
+                                                    "properties": {
+                                                        "ratedVoltageAc": {
+                                                            "exclusiveMaximum": 150
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        ]
+                                    }
                                 },
                                 "standard": {
                                     "description": "The safety standard the class is granted under, verbatim as the datasheet prints it (e.g. \"IEC 60384-14\", \"EN 60384-14\", \"UL 60384-14\"). Null or absent when the sheet names a class but no standard.",
@@ -230,7 +329,305 @@
                                         "type": "string"
                                     }
                                 }
-                            }
+                            },
+                            "allOf": [
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class",
+                                            "ratings"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "x1"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "ratings": {
+                                                "minItems": 1,
+                                                "maxItems": 1,
+                                                "allOf": [
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "x1"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class",
+                                            "ratings"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "x2"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "ratings": {
+                                                "minItems": 1,
+                                                "maxItems": 1,
+                                                "allOf": [
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "x2"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class",
+                                            "ratings"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "y1"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "ratings": {
+                                                "minItems": 1,
+                                                "maxItems": 1,
+                                                "allOf": [
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "y1"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class",
+                                            "ratings"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "y2"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "ratings": {
+                                                "minItems": 1,
+                                                "maxItems": 1,
+                                                "allOf": [
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "y2"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class",
+                                            "ratings"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "y4"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "ratings": {
+                                                "minItems": 1,
+                                                "maxItems": 1,
+                                                "allOf": [
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "y4"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class",
+                                            "ratings"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "x1y2"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "ratings": {
+                                                "minItems": 2,
+                                                "maxItems": 2,
+                                                "allOf": [
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "x1"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "y2"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class",
+                                            "ratings"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "x1y1"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "properties": {
+                                            "ratings": {
+                                                "minItems": 2,
+                                                "maxItems": 2,
+                                                "allOf": [
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "x1"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    },
+                                                    {
+                                                        "contains": {
+                                                            "properties": {
+                                                                "class": {
+                                                                    "const": "y1"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "class"
+                                                            ]
+                                                        }
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                {
+                                    "if": {
+                                        "type": "object",
+                                        "required": [
+                                            "class"
+                                        ],
+                                        "properties": {
+                                            "class": {
+                                                "const": "none"
+                                            }
+                                        }
+                                    },
+                                    "then": {
+                                        "not": {
+                                            "required": [
+                                                "ratings"
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
                         }
                     },
                     "additionalProperties": false,
