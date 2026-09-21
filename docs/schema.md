@@ -55,12 +55,13 @@ Inherited from PEAS `designRequirementsBase` (all optional): `name`, `market` (`
 
 Reference: `capacitor.json`
 
-The capacitor object is closed and has two optional properties, constrained by an `anyOf`: either `manufacturerInfo` is present (a sourced part) **or** the object is completely empty (`{}` — a pre-sourcing seed whose requirements live in `inputs.designRequirements`).
+The capacitor object is closed and has three optional properties, constrained by an `anyOf`: either `manufacturerInfo` is present (a sourced part) **or** the object is completely empty (`{}` — a pre-sourcing seed whose requirements live in `inputs.designRequirements`). A document carrying only `substitutesInfo` satisfies neither branch and is rejected.
 
 | Field | Type | Required | Description |
 |---|---|---|---|
 | `manufacturerInfo` | object | Yes (unless empty seed) | Container for manufacturer-specific information |
 | `distributorsInfo` | array of PEAS `distributorInfo` | No | Where to buy this component — packaging, MOQ, VPE, lead time, stock, cost `{value, currency}`. This is where all commercial data lives; there is **no** `business` section in `datasheetInfo`. |
+| `substitutesInfo` | array of PEAS `substituteInfo` | No | Replacement parts: manufacturer-named successors and second sources (`{partNumber, manufacturer, type, notes, source}`). `type: "successor"` means THIS part is superseded by the named one — one hop, as the manufacturer states it, never inferred from `status: obsolete`. The named part need not be in any catalogue; resolving it is the referential pass's job. The evidence goes in `datasheetInfo.provenance[]` with `fields: ["substitutesInfo"]` (PEAS-RFC 0002). |
 
 ### manufacturerInfo
 
