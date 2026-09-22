@@ -693,7 +693,7 @@
                     }
                 },
                 "ratedVoltage": {
-                    "description": "Rated voltage in Volts",
+                    "description": "Rated voltage in Volts. Required unless `voltageRatedAcMax` states a numeric AC rating: an AC-only interference-suppression (X/Y class) capacitor publishes no DC rating, and its AC figure belongs in `voltageRatedAcMax`, which is a DIFFERENT quantity. At least one of the two must be present; both may be.",
                     "type": "number"
                 },
                 "polarized": {
@@ -843,8 +843,26 @@
                 }
             },
             "required": [
-                "capacitance",
-                "ratedVoltage"
+                "capacitance"
+            ],
+            "anyOf": [
+                {
+                    "description": "A part with a DC (or unqualified) rating states it in `ratedVoltage`, exactly as before.",
+                    "required": [
+                        "ratedVoltage"
+                    ]
+                },
+                {
+                    "description": "An AC-only interference-suppression capacitor publishes no DC rating, so `ratedVoltage` may be omitted provided the AC rating is actually stated \u2014 `voltageRatedAcMax` must be present AND a number, since null means 'no AC rating published' and would otherwise leave the part with no rated voltage at all.",
+                    "required": [
+                        "voltageRatedAcMax"
+                    ],
+                    "properties": {
+                        "voltageRatedAcMax": {
+                            "type": "number"
+                        }
+                    }
+                }
             ]
         },
         "thermal": {

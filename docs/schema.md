@@ -222,7 +222,7 @@ costs more in the long run than a conversion at the display layer.
 
 ## electrical
 
-Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** All other fields are optional — `esr` and `rippleCurrent` are rarely published for ceramic/film parts and are enriched from the datasheet by the component-librarian when needed.
+Electrical characteristics. **Required fields: `capacitance`, plus at least one of `ratedVoltage` or a numeric `voltageRatedAcMax`.** `ratedVoltage` was unconditionally required until an AC-only interference-suppression (X/Y class) capacitor showed the rule has no correct answer: such a part publishes no DC rating at all, so the requirement forced its AC figure into the field the schema's own text distinguishes FROM the AC one. The relaxation is scoped by an `anyOf` — a record with neither field is still rejected, and `voltageRatedAcMax: null` does not satisfy it, because null means "no AC rating published". All other fields are optional — `esr` and `rippleCurrent` are rarely published for ceramic/film parts and are enriched from the datasheet by the component-librarian when needed.
 
 | Field | Type | Nullable | Unit | Description |
 |---|---|---|---|---|
@@ -230,7 +230,7 @@ Electrical characteristics. **Required fields: `capacitance`, `ratedVoltage`.** 
 | `capacitanceDriftLongTermPercent` | number | Yes | % | End-of-life capacitance change (decrease) |
 | `capacitanceMinimumLongTerm` | number | Yes | Farads | Worst-case minimum capacitance after end-of-life, accounting for initial tolerance |
 | `capacitanceBiasPoints` | array | No | — | DC-bias derating curve (dominant for class-2 ceramics): points `{voltage (V), capacitance (F), temperature (°C), acVoltage (V)}` (`voltage`+`capacitance` required per point) |
-| `ratedVoltage` | number | No | Volts | Rated voltage |
+| `ratedVoltage` | number | No | Volts | Rated voltage. Required unless `voltageRatedAcMax` carries a numeric AC rating |
 | `polarized` | boolean | Yes | — | True for polarized chemistries (aluminum electrolytic, tantalum, tantalum-polymer, niobium-oxide, EDLC); false for ceramic, film, mica. Null = unknown — downstream selection should conservatively disallow AC swing. |
 | `voltageRatedDcMax` | number | Yes | Volts | Maximum DC rated voltage |
 | `voltageRatedAcMax` | number | Yes | Volts RMS | Maximum continuous AC rated voltage (50/60 Hz unless the sheet says otherwise). The headline rating of an X/Y-class part (275 / 300 / 305 / 310 / 440 V~) and a **different quantity** from `ratedVoltage` / `voltageRatedDcMax`, which are DC. |

@@ -475,3 +475,74 @@ beforehand, so no existing row could be affected by the new constraints.
 `voltageRatedAcMax` sits empty. Moving them needs `ratedVoltage` relaxed for AC-only parts,
 which is not purely additive and is left for a separate decision. No data was migrated into
 `ratings[]` by this change.
+
+## Amendments after the second implementation (2026-09-23)
+
+**The deferred, non-additive half landed.** `electrical.ratedVoltage` is no longer
+unconditionally required. `required` keeps `capacitance` alone, and an `anyOf` beside it
+demands **at least one of** `ratedVoltage` or a *numeric* `voltageRatedAcMax`. Three
+properties of that shape are deliberate:
+
+1. **It is scoped, not a blanket relaxation.** A record carrying neither field is still
+   rejected — asserted before and after the change, so the negative is known to be measuring
+   something.
+2. **`voltageRatedAcMax: null` does not satisfy it.** The AC branch pins
+   `voltageRatedAcMax` to `type: "number"`, because null means "no AC rating published" and
+   would otherwise leave a part with no rated voltage at all while passing.
+3. **Nothing currently valid becomes invalid.** Every record that validated before carries
+   `ratedVoltage`, which is branch one verbatim. Confirmed across all 253,832 live
+   capacitors.
+
+The `anyOf` sits beside `additionalProperties: false` rather than inside an allOf branch, so
+no branch has to re-declare the base's properties; the AC branch's lone `properties` entry
+constrains a type and does not participate in the closure.
+
+`CAS/docs/schema.md` moved with it (the electrical section's "Required fields" sentence and
+the `ratedVoltage` row).
+
+**Option 1 of "What this adds to the proposal" is therefore settled**, and it was settled the
+way the schema's own text argued for: `ratedVoltage` is the DC quantity, an AC-only part puts
+its figure in `voltageRatedAcMax`, and the schema now lets it.
+
+### The 261 TDK rows were migrated
+
+Re-derived per part from TDK — not from the series split recorded above — using two
+independent TDK sources that agree on all 261 parts:
+
+- the TDK Meister product database (`TstDB.tmdb`), specification types `301000350` and
+  `301000910` (identical rating strings on every part) cross-checked against `301000900`,
+  which stores the same fact as two short-form rows (`X1/440` + `Y1/400`);
+- the TDK Product Center detail page for each exact order code.
+
+Both readings agree part-for-part, 261/261, and reproduce the split the earlier pull found:
+**159 `X1/440VAC, Y2/300VAC` and 102 `X1/440VAC, Y1/400VAC`.** Per row: 440 moved from
+`ratedVoltage` (now removed) into `voltageRatedAcMax`, and `safetyClass` — previously absent
+on all 261 — was populated with the combined token plus a two-entry `ratings[]` carrying each
+class at its own voltage. No row's pair had to be inferred from a sibling, so none was left
+behind.
+
+Note what the migration did NOT write: the generic order-code field `2G` decodes to 400 V DC
+and is present in the Meister row as a numeric spec, exactly as this proposal predicted. It
+was not used for anything.
+
+### What did not survive contact with the schema
+
+**The `x1` first, `y*` second ordering of `ratings[]` is convention, not constraint.** The
+schema's agreement branches check the SET of classes, so `[y2, x1]` validates identically.
+The migration writes the vendor's own printed order; nothing enforces it.
+
+**`standard` was left unset on every migrated row.** TDK's per-class rating strings name the
+class and the voltage and no standard, and the part-level `standard` was equally absent. The
+field exists for the case where a certificate names one; inventing `IEC 60384-14` from the
+class token would be exactly the inference the `safetyClass` description forbids.
+
+### A consequence outside the schema, surfaced not silenced
+
+The TAS C++ physics validator scores capacitor completeness against a core-field manifest of
+`{capacitance, ratedVoltage}` with a 0.60 floor. With `ratedVoltage` legitimately gone, all
+261 migrated rows drop from completeness 1.0 to 0.5 and raise `GEN_SPARSE` (SUSPICIOUS) —
+rows that were `Ok` before the migration. The data is not sparse; the manifest predates the
+schema change and does not know the AC spelling of "this part states a rated voltage". The
+validator already has the idiom for this (`"dcResistance|dcResistances"` on magnetics), so the
+fix is one manifest entry, `"ratedVoltage|voltageRatedAcMax"` — but it is a C++ change to a
+fabrication detector, so it is reported here rather than made.
