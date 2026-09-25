@@ -127,7 +127,7 @@
             "allOf": [
                 {
                     "title": "class2HasNoLinearTemperatureCoefficient",
-                    "description": "A Class-2 ceramic dielectric has no linear temperature coefficient to state (IEC 60384-9: its permittivity vs temperature is non-linear, so the standard bounds a total percent change instead). `thermal.temperatureCoefficient` is therefore forbidden on ceramic-class-2 parts; use `thermal.capacitanceChangeOverTemperature`.",
+                    "description": "A Class-2 ceramic dielectric has no linear temperature coefficient to state (IEC 60384-9: its permittivity vs temperature is non-linear, so the standard bounds a total percent change instead). `thermal.temperatureCoefficient` and `thermal.temperatureCoefficientBands` are therefore forbidden on ceramic-class-2 parts; use `thermal.capacitanceChangeOverTemperature`.",
                     "if": {
                         "type": "object",
                         "required": [
@@ -150,11 +150,22 @@
                     "then": {
                         "properties": {
                             "thermal": {
-                                "not": {
-                                    "required": [
-                                        "temperatureCoefficient"
-                                    ]
-                                }
+                                "allOf": [
+                                    {
+                                        "not": {
+                                            "required": [
+                                                "temperatureCoefficient"
+                                            ]
+                                        }
+                                    },
+                                    {
+                                        "not": {
+                                            "required": [
+                                                "temperatureCoefficientBands"
+                                            ]
+                                        }
+                                    }
+                                ]
                             }
                         }
                     }
@@ -902,6 +913,44 @@
                                     "type": "null"
                                 }
                             ]
+                        },
+                        "temperatureCoefficientBands": {
+                            "description": "Class-1 linear temperature coefficient stated separately over two or more temperature spans, for dielectrics whose datasheet gives a different ppm/\u00b0C figure per span (e.g. Murata U2J: one coefficient over -55..25 \u00b0C and another over 25..125 \u00b0C). Same unit and convention as `temperatureCoefficient` (raw ppm/\u00b0C; `minimum`/`maximum` carry the tolerance band). Use it only when the datasheet prints per-span figures; a single figure goes in `temperatureCoefficient`. Forbidden on ceramic-class-2 parts.",
+                            "type": "array",
+                            "minItems": 2,
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "required": [
+                                    "coefficient",
+                                    "temperatureRange"
+                                ],
+                                "properties": {
+                                    "coefficient": {
+                                        "description": "Linear temperature coefficient over this span, in ppm/\u00b0C, as the datasheet prints it.",
+                                        "$ref": "https://psma.com/peas/utils.json#/$defs/dimensionWithTolerance"
+                                    },
+                                    "temperatureRange": {
+                                        "description": "The span, in degrees Celsius, the coefficient applies over.",
+                                        "type": "object",
+                                        "additionalProperties": false,
+                                        "required": [
+                                            "minimum",
+                                            "maximum"
+                                        ],
+                                        "properties": {
+                                            "minimum": {
+                                                "description": "Low end of the span, in degrees Celsius.",
+                                                "type": "number"
+                                            },
+                                            "maximum": {
+                                                "description": "High end of the span, in degrees Celsius.",
+                                                "type": "number"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         },
                         "capacitanceChangeOverTemperature": {
                             "description": "Bounded TOTAL capacitance change over a stated temperature range, in percent \u2014 the EIA-198 / IEC 60384-9 Class-2 quantity (X7R: \u00b115 % over -55..+125 \u00b0C; X5R: \u00b115 % over -55..+85 \u00b0C; X7T: +22/-33 %). It is NOT a rate and is meaningless without the span it applies over, which is why `temperatureRange` is required beside `changePercent`. Class-1 and film parts may also carry it (a ppm/\u00b0C coefficient implies a total change once a \u0394T is chosen), but a Class-1 part\u0027s primary figure is `temperatureCoefficient`. Replaces `tcc` for Class-2 parts.",
