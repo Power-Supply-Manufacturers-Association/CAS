@@ -337,6 +337,7 @@ Component shape and assembly information. **Required: `assembly`, `shapeType`.**
 | `"Screw Type"` | Screw terminal mounting |
 | `"SMT"` | Surface mount technology |
 | `"Snap-In"` | Snap-in mounting (large electrolytic capacitors) |
+| `"Chassis Mount"` | Body bolted or strapped to a chassis or panel, with separate electrical terminals (solder lugs or wire leads); the fixing carries no current, unlike `"Screw Type"` |
 
 ---
 

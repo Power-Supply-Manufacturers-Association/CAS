@@ -1128,7 +1128,8 @@
                         "THT",
                         "Screw Type",
                         "SMT",
-                        "Snap-In"
+                        "Snap-In",
+                        "Chassis Mount"
                     ]
                 },
                 "shapeType": {
