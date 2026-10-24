@@ -146,6 +146,20 @@ def test_requirement_and_part_enums_cannot_drift(registry):
     assert items == {"$ref": "../capacitor.json#/$defs/technology"}
 
 
+def test_pen_film_is_one_technology_on_both_sides(cas_validator, mlcc_doc, registry):
+    # Part side: the anchor enum itself accepts the PEN token and rejects an ad-hoc spelling.
+    tech = Draft202012Validator(
+        registry.resolver().lookup("https://psma.com/cas/capacitor.json#/$defs/technology").contents,
+        registry=registry)
+    assert tech.is_valid("film-polyethylene-naphthalate")
+    assert not tech.is_valid("film-pen")
+    # Requirement side reaches the same token through the $ref, with no edit of its own.
+    mlcc_doc["inputs"]["designRequirements"]["allowedTechnologies"] = ["film-polyethylene-naphthalate"]
+    assert_valid(cas_validator, mlcc_doc)
+    mlcc_doc["inputs"]["designRequirements"]["allowedTechnologies"] = ["film-pen"]
+    assert_invalid(cas_validator, mlcc_doc)
+
+
 # --- wrapper removal + seed ------------------------------------------------------
 
 def test_double_nested_wrapper_rejected(cas_validator, mlcc_doc):

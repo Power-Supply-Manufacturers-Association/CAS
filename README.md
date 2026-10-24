@@ -58,7 +58,7 @@ The `technology` field is a closed 20-value enum (`schemas/capacitor.json#/$defs
 | **Ceramic** | `ceramic-class-1`, `ceramic-class-2`, `ceramic-class-3` | Class 1 (C0G/NP0): precision timing, filtering, resonant circuits. Class 2 (X5R/X7R): bulk decoupling, DC link, output filtering -- subject to DC bias derating. Class 3 (Y5U etc.): general purpose. |
 | **Aluminum** | `aluminum-electrolytic-wet`, `aluminum-electrolytic-polymer`, `aluminum-hybrid-polymer` | DC bus, bulk energy storage, hold-up; polymer variants for low-ESR output filtering and POL converters. |
 | **Tantalum / Niobium** | `tantalum-wet`, `tantalum-mno2`, `tantalum-polymer`, `niobium-oxide` | Stable bulk capacitance, low-profile decoupling. |
-| **Film** | `film-polypropylene`, `film-polyester`, `film-polyphenylene-sulfide`, `film-paper`, `film-acrylic` | Snubbers, resonant circuits, DC link in inverters, EMI suppression. Self-healing, high ripple current capability. `film-acrylic` is the PML vapour-deposited acrylate construction (e.g. Rubycon PMLCAP). |
+| **Film** | `film-polypropylene`, `film-polyester`, `film-polyethylene-naphthalate`, `film-polyphenylene-sulfide`, `film-paper`, `film-acrylic` | Snubbers, resonant circuits, DC link in inverters, EMI suppression. Self-healing, high ripple current capability. `film-acrylic` is the PML vapour-deposited acrylate construction (e.g. Rubycon PMLCAP). |
 | **Other** | `mica`, `thin-film-silicon`, `supercapacitor-edlc`, `supercapacitor-hybrid`, `vacuum` | RF precision (mica, thin-film silicon), energy buffering (supercaps), high-power RF (vacuum). |
 
 ---

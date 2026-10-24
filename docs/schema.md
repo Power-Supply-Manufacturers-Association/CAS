@@ -175,6 +175,7 @@ A closed 20-value enum (`capacitor.json#/$defs/technology`) so downstream select
 | `ceramic-class-3` | Class-3 ceramics (Y5U etc.) |
 | `film-polypropylene` | Metallized/film polypropylene |
 | `film-polyester` | Metallized/film polyester (PET) |
+| `film-polyethylene-naphthalate` | Metallized polyethylene-naphthalate (PEN) film (e.g. KEMET LDE stacked SMD chips) — not PET |
 | `film-polyphenylene-sulfide` | PPS film |
 | `film-paper` | Paper / metallized paper |
 | `film-acrylic` | Polymer-multi-layer (PML) vapour-deposited acrylate (e.g. Rubycon PMLCAP) |

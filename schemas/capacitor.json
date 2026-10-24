@@ -1286,7 +1286,7 @@
         },
         "technology": {
             "title": "technology",
-            "description": "Capacitor technology / chemistry family. Closed enum so downstream selection logic can dispatch on chemistry without parsing free-form strings. Ceramic class is the dielectric-temperature behaviour family (class-1 = temperature-stable C0G/NP0; class-2 = X7R/X5R/Y5V high-K, voltage- and temperature-dependent; class-3 = Y5U etc.). The standard EIA/MIL dielectric code (e.g. X7R, C0G) goes in dielectricCode. thin-film-silicon is deposited SiO2/SiON dielectric on a substrate (Kyocera AVX Accu-P, Murata silicon capacitors, Vishay RFCS) - a distinct technology from sintered ceramics (different dielectric and process; distributors list it as its own category) and from the polymer film-* values. film-acrylic is the polymer-multi-layer (PML) construction: a vapour-deposited cross-linked acrylate (acrylic resin) dielectric stacked in 1000-5000 sub-micron layers (e.g. Rubycon PMLCAP) - distinct from wound/stacked thermoplastic metallized film (polypropylene/polyester/PPS) in both dielectric and process.",
+            "description": "Capacitor technology / chemistry family. Closed enum so downstream selection logic can dispatch on chemistry without parsing free-form strings. Ceramic class is the dielectric-temperature behaviour family (class-1 = temperature-stable C0G/NP0; class-2 = X7R/X5R/Y5V high-K, voltage- and temperature-dependent; class-3 = Y5U etc.). The standard EIA/MIL dielectric code (e.g. X7R, C0G) goes in dielectricCode. thin-film-silicon is deposited SiO2/SiON dielectric on a substrate (Kyocera AVX Accu-P, Murata silicon capacitors, Vishay RFCS) - a distinct technology from sintered ceramics (different dielectric and process; distributors list it as its own category) and from the polymer film-* values. film-acrylic is the polymer-multi-layer (PML) construction: a vapour-deposited cross-linked acrylate (acrylic resin) dielectric stacked in 1000-5000 sub-micron layers (e.g. Rubycon PMLCAP) - distinct from wound/stacked thermoplastic metallized film (polypropylene/polyester/PPS) in both dielectric and process. film-polyethylene-naphthalate is metallized polyethylene-naphthalate (PEN) film, e.g. KEMET LDE 'Metallized PEN Stacked': a different thermoplastic dielectric from PET (film-polyester), with a higher glass-transition temperature, so it is NOT folded into film-polyester.",
             "type": "string",
             "enum": [
                 "aluminum-electrolytic-wet",
@@ -1301,6 +1301,7 @@
                 "ceramic-class-3",
                 "film-polypropylene",
                 "film-polyester",
+                "film-polyethylene-naphthalate",
                 "film-polyphenylene-sulfide",
                 "film-paper",
                 "film-acrylic",
